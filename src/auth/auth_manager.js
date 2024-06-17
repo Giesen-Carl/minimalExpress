@@ -22,7 +22,7 @@ auth_manager.use(express.json());
 // Database setup
 export const auth_db = new Sequelize({
     dialect: 'sqlite',
-    storage: 'database.sqlite'
+    storage: 'auth.sqlite'
 });
 
 const LoginData = auth_db.define('LoginData', {

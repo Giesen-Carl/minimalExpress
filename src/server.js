@@ -1,6 +1,6 @@
 import express from 'express';
 import sequelize from './database/sqliteDatabaseConfig.js';
-import auth_manager, { auth } from './auth/auth_manager.js';
+import auth_manager, { auth, auth_db } from './auth/auth_manager.js';
 
 const app = express();
 const port = 3000;
@@ -21,6 +21,7 @@ app.get('/about', auth, (req, res) => {
 const start = async () => {
     try {
         await sequelize.sync();
+        await auth_db.sync();
         app.listen(port, () => console.log(`Server is running at http://localhost:${port}`));
     } catch (error) {
         console.error('Unable to connect to the database:', error);

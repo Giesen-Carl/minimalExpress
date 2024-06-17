@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import { Sequelize, DataTypes } from 'sequelize';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import crypto from 'crypto';
 
 // Get the current file's directory
 const __filename = fileURLToPath(import.meta.url);
@@ -62,9 +63,11 @@ auth_manager.route('/login')
     .post(async (req, res) => {
         const { username, password } = req.body;
         const redirect = req.query.redirect;
+        const redirect_param = req.query.redirect ? `?redirect=${req.query.redirect}` : null;
         const expectedPassword = await LoginData.findByPk(username);
-        if (!expectedPassword || expectedPassword.password !== password) {
-            return res.render(`${__dirname}/views/login.ejs`, { username: username, password: password, error: 'Invalid username or password' });
+        const hashedPassword = hash(password);
+        if (!expectedPassword || !hashedPassword || expectedPassword.password !== hashedPassword) {
+            return res.render(`${__dirname}/views/login.ejs`, { username: username, password: password, redirect: redirect_param, error: 'Invalid username or password' });
         }
         const session = await Token.findOne({ where: { username: username } });
         if (session) {
@@ -83,14 +86,16 @@ auth_manager.route('/register')
     .post(async (req, res) => {
         const { username, password, passwordRepeat } = req.body;
         const redirect = req.query.redirect;
+        const redirect_param = req.query.redirect ? `?redirect=${req.query.redirect}` : null;
         if (password !== passwordRepeat) {
-            return res.render(`${__dirname}/views/register.ejs`, { username: username, password: password, passwordRepeat: passwordRepeat, error: 'Passwords do not match' });
+            return res.render(`${__dirname}/views/register.ejs`, { username: username, password: password, passwordRepeat: passwordRepeat, redirect: redirect_param, error: 'Passwords do not match' });
         }
         const existingUser = await LoginData.findByPk(username);
         if (existingUser) {
-            return res.render(`${__dirname}/views/register.ejs`, { username: username, password: password, passwordRepeat: passwordRepeat, error: 'User already exists' });
+            return res.render(`${__dirname}/views/register.ejs`, { username: username, password: password, passwordRepeat: passwordRepeat, redirect: redirect_param, error: 'User already exists' });
         }
-        await LoginData.create({ username: username, password: password });
+        const hashedPassword = hash(password);
+        await LoginData.create({ username: username, password: hashedPassword });
         const token = await generateToken(username);
         res.cookie('token', token).redirect(redirect ?? default_redirect);
     });
@@ -130,5 +135,14 @@ export const auth = async (req, res, next) => {
     req.username = db_token.username;
     next();
 };
+
+// Create Hash
+function hash(data) {
+    const secret = process.env.PASSWORD_HASH_SECRET;
+    if (!secret || !data) {
+        return null;
+    }
+    return crypto.createHmac('sha256', secret).update(data).digest('hex');
+}
 
 export default auth_manager;

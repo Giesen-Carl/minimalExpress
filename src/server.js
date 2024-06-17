@@ -1,10 +1,9 @@
 import express from 'express';
 import sequelize from './database/sqliteDatabaseConfig.js';
 import auth_manager, { auth, auth_db } from './auth/auth_manager.js';
+import 'dotenv/config';
 
 const app = express();
-const port = 3000;
-
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(auth_manager);
@@ -18,6 +17,7 @@ app.get('/about', auth, (req, res) => {
     res.render('about');
 });
 
+const port = process.env.PORT;
 const start = async () => {
     try {
         await sequelize.sync();

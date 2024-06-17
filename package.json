@@ -1,0 +1,22 @@
+{
+  "name": "express",
+  "version": "1.0.0",
+  "description": "Minimalistic express server",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "devStart": "nodemon src/server.js"
+  },
+  "author": "ME",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}

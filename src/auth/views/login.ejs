@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Login</title>
+</head>
+
+<body>
+    <form action="/login<%= locals.redirect %>" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" value="<%= locals.username %>" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="text" id="password" name="password" value="<%= locals.password %>" required>
+        <br>
+        <input type="submit" value="Login"><a href="/register<%=locals.redirect%>" id="register_button">Register</a>
+    </form>
+    <p>
+        <%= locals.error %>
+    </p>
+</body>
+
+</html>

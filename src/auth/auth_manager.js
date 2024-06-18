@@ -88,8 +88,6 @@ auth_manager.route('/register')
         const redirect = req.query.redirect;
         const redirect_param = req.query.redirect ? `?redirect=${req.query.redirect}` : null;
         if (password !== confirm_password) {
-            console.log(password)
-            console.log(confirm_password)
             return res.render(`${__dirname}/views/register.ejs`, { username: username, password: password, email: email, confirm_password: confirm_password, redirect: redirect_param, error: 'Passwords do not match' });
         }
         const existingUser = await LoginData.findByPk(username);

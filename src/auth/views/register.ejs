@@ -4,26 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <title>Login</title>
+    <title>Sign Up Page</title>
+    <link rel="stylesheet" href="auth_styles.css">
 </head>
 
 <body>
-    <form action="/register<%= locals.redirect %>" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" value="<%= locals.username %>" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" value="<%= locals.password %>" required>
-        <br>
-        <label for="password">Password wiederholen:</label>
-        <input type="password" id="password" name="passwordRepeat" value="<%= locals.passwordRepeat %>" required>
-        <br>
-        <input type="submit" value="Login">
-    </form>
-    <p>
-        <%= locals.error %>
-    </p>
+    <div class="login-container">
+        <h2>Sign Up</h2>
+        <form action="/register<%= locals.redirect %>" method="post">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" value="<%= locals.username %>" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="<%= locals.email %>" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" value="<%= locals.password %>" required>
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" value="<%= locals.confirm_password %>" required>
+            <div class="error-message" id="error-message"><%= locals.error %></div>
+            <button type="submit">Sign Up</button>
+            <a id="login" href="/login<%=locals.redirect%>">Login</a>
+        </form>
+    </div>
+    <script src="script.js"></script>
 </body>
 
 </html>

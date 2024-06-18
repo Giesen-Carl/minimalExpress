@@ -84,15 +84,17 @@ auth_manager.route('/register')
         res.render(`${__dirname}/views/register.ejs`, { redirect: redirect });
     })
     .post(async (req, res) => {
-        const { username, password, passwordRepeat } = req.body;
+        const { username, email, password, confirm_password } = req.body;
         const redirect = req.query.redirect;
         const redirect_param = req.query.redirect ? `?redirect=${req.query.redirect}` : null;
-        if (password !== passwordRepeat) {
-            return res.render(`${__dirname}/views/register.ejs`, { username: username, password: password, passwordRepeat: passwordRepeat, redirect: redirect_param, error: 'Passwords do not match' });
+        if (password !== confirm_password) {
+            console.log(password)
+            console.log(confirm_password)
+            return res.render(`${__dirname}/views/register.ejs`, { username: username, password: password, email: email, confirm_password: confirm_password, redirect: redirect_param, error: 'Passwords do not match' });
         }
         const existingUser = await LoginData.findByPk(username);
         if (existingUser) {
-            return res.render(`${__dirname}/views/register.ejs`, { username: username, password: password, passwordRepeat: passwordRepeat, redirect: redirect_param, error: 'User already exists' });
+            return res.render(`${__dirname}/views/register.ejs`, { username: username, password: password, email: email, confirm_password: confirm_password, redirect: redirect_param, error: 'User already exists' });
         }
         const hashedPassword = hash(password);
         await LoginData.create({ username: username, password: hashedPassword });

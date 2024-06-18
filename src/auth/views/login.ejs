@@ -4,23 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="styles.css">
     <title>Login</title>
+    <link rel="stylesheet" href="auth_styles.css">
 </head>
 
 <body>
-    <form action="/login<%= locals.redirect %>" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" value="<%= locals.username %>" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" value="<%= locals.password %>" required>
-        <br>
-        <input type="submit" value="Login"><a href="/register<%=locals.redirect%>" id="register_button">Register</a>
-    </form>
-    <p>
-        <%= locals.error %>
-    </p>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form action="/login<%= locals.redirect %>" method="POST">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" value="<%= locals.username %>" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" value="<%= locals.password %>" required>
+            <div class="error-message" id="error-message"><%= locals.error %></div>
+            <button type="submit">Login</button>
+            <a id="signup" href="/register<%=locals.redirect%>">Sign Up</a>
+        </form>
+    </div>
 </body>
 
 </html>

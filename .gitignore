@@ -1,3 +1,6 @@
+#certificates
+*.pem
+
 # Sqlite3
 *.sqlite
 

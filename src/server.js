@@ -17,12 +17,12 @@ app.get('/about', auth, (req, res) => {
     res.render('about');
 });
 
-const port = process.env.PORT;
+const httpPort = 80;
 const start = async () => {
     try {
         await sequelize.sync();
         await auth_db.sync();
-        app.listen(port, () => console.log(`Server is running at http://localhost:${port}`));
+        app.listen(httpPort, () => console.log(`Server is running at http://localhost:${httpPort}`));
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }

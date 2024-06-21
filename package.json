@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "devStart": "nodemon src/server.js",
-    "genenv": "node generateEnv.js"
+    "genenv": "node generateEnv.js",
+    "gencert": "node genDevCertificate.js"
   },
   "author": "ME",
   "license": "UNLICENSED",
@@ -21,6 +22,7 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "selfsigned": "^2.4.1",
     "nodemon": "^3.1.3"
   }
 }

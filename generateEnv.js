@@ -8,7 +8,7 @@ const hexString = crypto.randomBytes(16).toString('hex');
 const envContent = `PASSWORD_HASH_SECRET=${hexString}\n`;
 
 // Write the content to a new .env file
-fs.writeFile('test.env', envContent, (err) => {
+fs.writeFile('.env', envContent, (err) => {
   if (err) {
     console.error('Error writing to .env file:', err);
   } else {

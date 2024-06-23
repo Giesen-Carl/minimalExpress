@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import database from '../database.js';
 
-const User = database.define('User', {
+const Auth = database.define('Auth', {
     username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -13,8 +13,8 @@ const User = database.define('User', {
     },
 },
     {
-        tableName: 'User',
+        tableName: 'Auth',
         timestamps: false
     });
 
-export default User;
+export default Auth;

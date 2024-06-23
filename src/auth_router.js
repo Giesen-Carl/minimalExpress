@@ -1,7 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
-import User from './database/model/userModel.js';
+import Auth from './database/model/authModel.js';
 import jwt from 'jsonwebtoken'
 import bodyParser from 'body-parser';
 
@@ -70,7 +70,7 @@ export const auth = async (req, res, next) => {
 
 // Login function
 async function login(username, password) {
-    const expectedPassword = await User.findByPk(username);
+    const expectedPassword = await Auth.findByPk(username);
     if (!expectedPassword) {
         throw new Error('No Account found with this username');
     }
@@ -86,12 +86,12 @@ async function signup(username, email, password, confirm_password) {
     if (password !== confirm_password) {
         throw new Error('Passwords do not match');
     }
-    const existingUser = await User.findByPk(username);
+    const existingUser = await Auth.findByPk(username);
     if (existingUser) {
         throw new Error('User already exists');
     }
     const hashedPassword = hash(password);
-    await User.create({ username: username, password: hashedPassword });
+    await Auth.create({ username: username, password: hashedPassword });
     return await generateToken(username, email);
 }
 

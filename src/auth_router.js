@@ -2,18 +2,18 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
 import User from './database/model/userModel.js';
-import Token from './database/model/tokenModel.js';
+import jwt from 'jsonwebtoken'
+import bodyParser from 'body-parser';
 
 // Constants
 const default_redirect = '/';
-const token_duration = 3600000;
-const token_length = 128;
 
 // Router
 const auth_router = express.Router();
 auth_router.use(cookieParser());
 auth_router.use(express.urlencoded({ extended: true }));
-auth_router.use(express.json());
+// auth_router.use(express.json());
+auth_router.use(bodyParser.json());
 auth_router.use(redirect);
 
 // Login routes
@@ -50,30 +50,20 @@ auth_router.route('/signup')
 
 // Logout route
 auth_router.get('/logout', async (req, res) => {
-    await logout(req.cookies.token);
     res.clearCookie('token').redirect('/login');
 });
 
 // Middleware to check if user is authenticated
 export const auth = async (req, res, next) => {
     const token = req.cookies.token;
+    const secret = process.env.PASSWORD_HASH_SECRET;
     try {
-        const db_token = await Token.findByPk(token);
-        if (!db_token) {
-            throw new Error('no session found');
+        if (!token) {
+            throw Error('No Token Provided')
         }
-        const expiration_date = new Date(db_token.expires);
-        if (!isDateValid(expiration_date)) {
-            throw new Error('session token corrupted');
-        }
-        if (expiration_date < new Date()) {
-            await Token.destroy({ where: { token: token } });
-            throw new Error('token expired');
-        }
-        req.username = db_token.username;
+        req.payload = jwt.verify(token, secret);
         next();
-    } catch (error) {
-        console.log(error.message)
+    } catch (err) {
         return res.redirect('/login?redirect=' + req.url);
     }
 };
@@ -101,13 +91,8 @@ async function signup(username, email, password, confirm_password) {
         throw new Error('User already exists');
     }
     const hashedPassword = hash(password);
-    await User.create({ username: username, password: hashedPassword, email: email });
-    return await generateToken(username);
-}
-
-// Logout function
-async function logout(token) {
-    await Token.destroy({ where: { token: token } });
+    await User.create({ username: username, password: hashedPassword });
+    return await generateToken(username, email);
 }
 
 // Create Hash
@@ -120,11 +105,14 @@ function hash(data) {
 }
 
 // Helper function to generate a token
-async function generateToken(username) {
-    const token = crypto.randomBytes(token_length).toString('hex');
-    const expiration_date = new Date(Date.now() + parseInt(token_duration));
-    await Token.destroy({ where: { username: username } });
-    await Token.create({ token: token, username: username, expires: expiration_date });
+async function generateToken(username, email) {
+    const secret = process.env.PASSWORD_HASH_SECRET;
+    const options = { expiresIn: '1h' };
+    const payload = {
+        username: username,
+        email: email
+    }
+    const token = jwt.sign(payload, secret, options);
     return token;
 }
 
@@ -134,10 +122,5 @@ function redirect(req, res, next) {
     req.redirect_param = `?redirect=${req.redirect}`;
     next();
 };
-
-// Helper function to check if a date is valid
-function isDateValid(dateStr) {
-    return !isNaN(new Date(dateStr));
-}
 
 export default auth_router;

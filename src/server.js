@@ -17,7 +17,7 @@ app.use(express.static('public'));
 app.use(auth_router);
 
 app.get('/', auth, (req, res) => {
-    res.render('home', { name: req.username });
+    res.render('home', { name: req.payload.username });
 });
 
 app.get('/about', auth, (req, res) => {

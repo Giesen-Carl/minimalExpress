@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
 import Auth from './database/model/authModel.js';
+import User from './database/model/userModel.js';
 import jwt from 'jsonwebtoken'
 import bodyParser from 'body-parser';
 
@@ -12,7 +13,6 @@ const default_redirect = '/';
 const auth_router = express.Router();
 auth_router.use(cookieParser());
 auth_router.use(express.urlencoded({ extended: true }));
-// auth_router.use(express.json());
 auth_router.use(bodyParser.json());
 auth_router.use(redirect);
 
@@ -61,7 +61,8 @@ export const auth = async (req, res, next) => {
         if (!token) {
             throw Error('No Token Provided')
         }
-        req.payload = jwt.verify(token, secret);
+        const id = jwt.verify(token, secret).id;
+        req.user = await User.findByPk(id);;
         next();
     } catch (err) {
         return res.redirect('/login?redirect=' + req.url);
@@ -70,9 +71,13 @@ export const auth = async (req, res, next) => {
 
 // Login function
 async function login(username, password) {
-    const expectedPassword = await Auth.findByPk(username);
-    if (!expectedPassword) {
+    const id = await User.findOne({ where: { username: username } }).id;
+    if (!id) {
         throw new Error('No Account found with this username');
+    }
+    const expectedPassword = await Auth.findByPk(id);
+    if (!expectedPassword) {
+        throw new Error('There was a problem during login. Pls contact you admin.');
     }
     const hashedPassword = hash(password);
     if (!hashedPassword || expectedPassword.password !== hashedPassword) {
@@ -91,8 +96,10 @@ async function signup(username, email, password, confirm_password) {
         throw new Error('User already exists');
     }
     const hashedPassword = hash(password);
-    await Auth.create({ username: username, password: hashedPassword });
-    return await generateToken(username, email);
+    const id = crypto.randomUUID();
+    await Auth.create({ id, password: hashedPassword });
+    await User.create({ id, username, email });
+    return await generateToken(id);
 }
 
 // Create Hash
@@ -105,12 +112,11 @@ function hash(data) {
 }
 
 // Helper function to generate a token
-async function generateToken(username, email) {
+async function generateToken(id) {
     const secret = process.env.PASSWORD_HASH_SECRET;
     const options = { expiresIn: '1h' };
     const payload = {
-        username: username,
-        email: email
+        id: id,
     }
     const token = jwt.sign(payload, secret, options);
     return token;

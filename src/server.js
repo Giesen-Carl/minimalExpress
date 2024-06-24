@@ -17,11 +17,23 @@ app.use(express.static('public'));
 app.use(auth_router);
 
 app.get('/', auth, (req, res) => {
-    res.render('home', { name: req.payload.username });
+    res.render('home', { name: req.user.username });
 });
 
 app.get('/about', auth, (req, res) => {
-    res.render('about');
+    const data = {
+        username: req.user.username,
+        email: req.user.email
+    };
+    res.render('about', data);
+});
+
+app.get('/profile', auth, (req, res) => {
+    const data = {
+        username: req.user.username,
+        email: req.user.email
+    };
+    res.render('profile', data);
 });
 
 const start = async () => {

@@ -1,20 +1,24 @@
 import { DataTypes } from 'sequelize';
 import database from '../database.js';
 
-const Auth = database.define('Auth', {
+const User = database.define('User', {
     id: {
         type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
     },
-    password: {
+    username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    email: {
         type: DataTypes.STRING,
         allowNull: false,
     },
 },
     {
-        tableName: 'Auth',
+        tableName: 'User',
         timestamps: false
     });
 
-export default Auth;
+export default User;

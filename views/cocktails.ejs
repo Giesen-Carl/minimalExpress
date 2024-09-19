@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fermantor - Die besten Cocktails in Düren</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+    <!-- partial:index.partial.html -->
+    <div class="wrapper">
+
+        <h2>Tristans mega leckere Cocktails</h2>
+
+        <div class="buttons-container">
+            <% for (const data of locals.data) { %>
+                <a href="#" class="button <%= data === locals.data[0] ? 'button--is-active' : ''%>"
+                    data-target=<%=data.name + '-menu' %>><%= data.name%></a>
+                <%}%>
+        </div>
+
+        <% for (const data of locals.data) { %>
+            <div class="menu <%= data === locals.data[0] ? ' menu--is-visible' : '' %>" id=<%=data.name + '-menu' %>>
+                <% data.items.forEach(element=> { %>
+                    <div class="item">
+                        <div class="item__header">
+                            <h3 class="item__title">
+                                <%= element.name %>
+                            </h3>
+                            <span class="item__dots"></span>
+                            <span class="item__price">
+                                <%= element.price %>&euro;
+                            </span>
+                        </div>
+                        <p class="item__description"><i>
+                                <% element.description.forEach(desc=> { %>
+                                    <%= desc %></br>
+                                        <% }); %>
+                            </i></p>
+                    </div>
+                    <% }); %>
+            </div>
+            <% } %>
+
+    </div> <!-- End Wrapper -->
+    <!-- partial -->
+    <script src="scripts/scripts.js"></script>
+</body>
+
+</html>

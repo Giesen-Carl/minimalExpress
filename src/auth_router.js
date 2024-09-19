@@ -32,22 +32,6 @@ auth_router.route('/login')
         }
     });
 
-// Signup routes
-auth_router.route('/signup')
-    .get((req, res) => {
-        res.render('signup.ejs', { redirect: req.redirect_param });
-    })
-    .post(async (req, res) => {
-        const { username, email, password, confirm_password } = req.body;
-        try {
-            const token = await signup(username, email, password, confirm_password);
-            res.cookie('token', token).redirect(req.redirect);
-        } catch (error) {
-            const data = { username: username, email: email, password: password, confirm_password: confirm_password, redirect: req.redirect_param, error: error.message }
-            res.render('signup.ejs', data);
-        }
-    });
-
 // Logout route
 auth_router.get('/logout', async (req, res) => {
     res.clearCookie('token').redirect('/login');

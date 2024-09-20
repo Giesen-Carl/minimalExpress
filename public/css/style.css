@@ -10,6 +10,14 @@
     display: grid;
 }
 
+.delete-button {
+    display: none;
+}
+
+.button--is-visible {
+    display: grid;
+}
+
 @media (min-width: 768px) {
     .menu {
         grid-template-columns: repeat(2, 1fr);

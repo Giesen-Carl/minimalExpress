@@ -17,10 +17,14 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(auth_router);
 
-app.get('/cocktails', async (req, res) => {
+app.get('/', async (req, res) => {
     const cocktails = await Cocktail.findAll();
     const data = getData(cocktails)
-    res.render('cocktails', { data })
+    const config = {
+        showDeleteButtons: true,
+        redirect: `?redirect=${req.url}`
+    }
+    res.render('cocktails', { data: data, config: config })
 });
 
 function getData(cocktails) {
@@ -41,21 +45,36 @@ function mapDescription(cocktail) {
         description: cocktail.description.split(','),
     }
 }
+app.route('/cocktails')
+    .get((req, res) => {
+        res.render('createCocktail.ejs');
+    })
+    .post(async (req, res) => {
+        try {
+            const body = req.body;
+            await Cocktail.create({
+                name: body.name,
+                category: body.category,
+                price: body.price,
+                description: body.description,
+            });
+            res.redirect('/');
+        } catch (e) {
+            console.log(e)
+            res.render('createCocktail.ejs');
+        }
+    });
 
-app.post('/cocktails', async (req, res) => {
+app.post('/cocktails/delete/:name', async (req, res) => {
+    const paramName = req.params.name;
     try {
-        const body = req.body;
-        await Cocktail.create({
-            name: body.name,
-            category: body.category,
-            price: body.price,
-            description: body.description,
-        });
-        res.status(200).send("Cocktail erfolgreich Angelegt.")
+        const cocktail = await Cocktail.findOne({ where: { name: paramName } })
+        await cocktail.destroy();
     } catch (e) {
-        console.log(e)
-        res.status(500).send("Cocktail konnte nicht engelegt werden.");
+        console.log(e);
     }
+    console.log(req.query)
+    res.redirect('/')
 });
 
 const start = async () => {

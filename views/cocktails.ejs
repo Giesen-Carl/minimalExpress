@@ -15,6 +15,9 @@
     <div class="wrapper">
 
         <h2>Tristans mega leckere Cocktails</h2>
+        <form action="/cocktails" method="get">
+            <button type="submit">+</button>
+        </form>
 
         <div class="buttons-container">
             <% for (const data of locals.data) { %>
@@ -28,6 +31,12 @@
                 <% data.items.forEach(element=> { %>
                     <div class="item">
                         <div class="item__header">
+                            <form action="/cocktails/delete/<%= element.name %><%= locals.config.redirect %>"
+                                method="post">
+                                <button
+                                    class="delete-button <%= locals.config.showDeleteButtons ? 'button--is-visible' : '' %>"
+                                    type="submit">x</button>
+                            </form>
                             <h3 class="item__title">
                                 <%= element.name %>
                             </h3>

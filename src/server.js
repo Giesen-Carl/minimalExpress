@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import https from 'https';
 import fs from 'fs';
-import auth_router, { auth } from './auth_router.js';
+import auth_router, { auth, authUser, Role } from './auth_router.js';
 import database from './database/database.js';
 import Cocktail from './database/model/cocktailModel.js';
 
@@ -17,11 +17,11 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(auth_router);
 
-app.get('/', async (req, res) => {
+app.get('/', authUser, async (req, res) => {
     const cocktails = await Cocktail.findAll();
     const data = getData(cocktails)
     const config = {
-        showDeleteButtons: true,
+        role: req.user?.role,
         redirect: `?redirect=${req.url}`
     }
     res.render('cocktails', { data: data, config: config })
@@ -46,22 +46,28 @@ function mapDescription(cocktail) {
     }
 }
 app.route('/cocktails')
-    .get((req, res) => {
+    .get(auth, (req, res) => {
+        validateRole(req, Role.ADMIN);
         res.render('createCocktail.ejs');
     })
-    .post(async (req, res) => {
+    .post(auth, async (req, res) => {
+        validateRole(req, Role.ADMIN);
+        const body = req.body;
         try {
-            const body = req.body;
+            const existing = await Cocktail.findByPk(body.name);
+            if (existing) {
+                throw new Error('Es existiert bereicts ein Cocktail mit diesem Namen.')
+            }
             await Cocktail.create({
-                name: body.name,
+                name: body.cocktailIdent,
                 category: body.category,
                 price: body.price,
                 description: body.description,
             });
             res.redirect('/');
-        } catch (e) {
-            console.log(e)
-            res.render('createCocktail.ejs');
+        } catch (error) {
+            const data = { cocktailIdent: body.cocktailIdent, category: body.category, price: body.price, description: body.description, error: error.message };
+            res.render('createCocktail.ejs', data);
         }
     });
 
@@ -81,5 +87,11 @@ const start = async () => {
     await database.sync();
     httpsServer.listen(443, () => console.log(`Server is running at http://localhost:${443}`));
 };
+
+function validateRole(req, role) {
+    if (req.user.role !== role) {
+        throw new Error('Du besitzt nicht die benötigten Rechte um diese Seite zu öffnen.')
+    }
+}
 
 start();

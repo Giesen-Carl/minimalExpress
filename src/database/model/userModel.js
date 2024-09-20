@@ -11,7 +11,7 @@ const User = database.define('User', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    email: {
+    role: {
         type: DataTypes.STRING,
         allowNull: false,
     },

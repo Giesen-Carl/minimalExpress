@@ -8,6 +8,10 @@ import bodyParser from 'body-parser';
 
 // Constants
 const default_redirect = '/';
+export const Role = {
+    ADMIN: 'ADMIN',
+    USER: 'USER',
+}
 
 // Router
 const auth_router = express.Router();
@@ -32,6 +36,23 @@ auth_router.route('/login')
         }
     });
 
+// Signup routes
+auth_router.route('/signup')
+    .get((req, res) => {
+        res.render('signup.ejs', { redirect: req.redirect_param });
+    })
+    .post(async (req, res) => {
+        const { username, password, confirm_password } = req.body;
+        try {
+            const token = await signup(username, password, confirm_password);
+            res.cookie('token', token).redirect(req.redirect);
+        } catch (error) {
+            const data = { username: username, password: password, confirm_password: confirm_password, redirect: req.redirect_param, error: error.message }
+            res.render('signup.ejs', data);
+        }
+    });
+
+
 // Logout route
 auth_router.get('/logout', async (req, res) => {
     res.clearCookie('token').redirect('/login');
@@ -53,9 +74,22 @@ export const auth = async (req, res, next) => {
     }
 };
 
+export const authUser = async (req, res, next) => {
+    const token = req.cookies.token;
+    const secret = process.env.PASSWORD_HASH_SECRET;
+    if (token) {
+        const id = jwt.verify(token, secret).id;
+        console.log(jwt.verify(token, secret))
+        req.user = await User.findByPk(id);
+    }
+    next();
+};
+
 // Login function
 async function login(username, password) {
-    const id = await User.findOne({ where: { username: username } }).id;
+    console.log(username)
+    const user = await User.findOne({ where: { username: username } })
+    const id = user.id;
     if (!id) {
         throw new Error('No Account found with this username');
     }
@@ -67,11 +101,11 @@ async function login(username, password) {
     if (!hashedPassword || expectedPassword.password !== hashedPassword) {
         throw new Error('wrong password entered');
     }
-    return await generateToken(username);
+    return await generateToken(id);
 }
 
 // signup function
-async function signup(username, email, password, confirm_password) {
+async function signup(username, password, confirm_password) {
     if (password !== confirm_password) {
         throw new Error('Passwords do not match');
     }
@@ -81,9 +115,21 @@ async function signup(username, email, password, confirm_password) {
     }
     const hashedPassword = hash(password);
     const id = crypto.randomUUID();
+    const role = Role.USER;
     await Auth.create({ id, password: hashedPassword });
-    await User.create({ id, username, email });
+    await User.create({ id, username, role });
     return await generateToken(id);
+}
+
+export async function changeRole(username, role) {
+    const user = await User.findOne({ where: { username: username } });
+    if (!user) {
+        throw new Error(`The user ${username} could not be found.`)
+    }
+    if (!Object.values(Role).includes(role)) {
+        throw new Error(`The Role ${role} does not exist.`)
+    }
+    user.update({ role: role })
 }
 
 // Create Hash

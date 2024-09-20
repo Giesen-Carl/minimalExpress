@@ -16,7 +16,8 @@
 
         <h2>Tristans mega leckere Cocktails</h2>
         <form action="/cocktails" method="get">
-            <button type="submit">+</button>
+            <button class="visibility-button <%= locals.config.role === 'ADMIN' ? 'button--is-visible' : '' %>"
+                type="submit">+</button>
         </form>
 
         <div class="buttons-container">
@@ -34,7 +35,7 @@
                             <form action="/cocktails/delete/<%= element.name %><%= locals.config.redirect %>"
                                 method="post">
                                 <button
-                                    class="delete-button <%= locals.config.showDeleteButtons ? 'button--is-visible' : '' %>"
+                                    class="visibility-button <%= locals.config.role === 'ADMIN' ? 'button--is-visible' : '' %>"
                                     type="submit">x</button>
                             </form>
                             <h3 class="item__title">

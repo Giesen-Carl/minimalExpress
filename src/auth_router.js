@@ -55,7 +55,8 @@ auth_router.route('/signup')
 
 // Logout route
 auth_router.get('/logout', async (req, res) => {
-    res.clearCookie('token').redirect('/login');
+    const redirect = req.redirect;
+    res.clearCookie('token').redirect(redirect ?? '/login');
 });
 
 // Middleware to check if user is authenticated
@@ -78,16 +79,16 @@ export const authUser = async (req, res, next) => {
     const token = req.cookies.token;
     const secret = process.env.PASSWORD_HASH_SECRET;
     if (token) {
-        const id = jwt.verify(token, secret).id;
-        console.log(jwt.verify(token, secret))
-        req.user = await User.findByPk(id);
+        try {
+            const id = jwt.verify(token, secret).id;
+            req.user = await User.findByPk(id);
+        } catch (error) {}
     }
     next();
 };
 
 // Login function
 async function login(username, password) {
-    console.log(username)
     const user = await User.findOne({ where: { username: username } })
     const id = user.id;
     if (!id) {

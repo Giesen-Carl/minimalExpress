@@ -13,7 +13,20 @@
 <body>
     <!-- partial:index.partial.html -->
     <div class="wrapper">
-
+        <div id="login-container">
+            <% if (locals.config.username) { %>
+                <p>
+                    <%= locals.config.username %>
+                </p>
+                <form action="/logout?redirect=/" method="get">
+                    <button type="submit">Logout</button>
+                </form>
+                <% } else { %>
+                    <form action="/login?redirect=/" method="get">
+                        <button type="submit">Login</button>
+                    </form>
+                    <% } %>
+        </div>
         <h2>Tristans mega leckere Cocktails</h2>
         <form action="/cocktails" method="get">
             <button class="visibility-button <%= locals.config.role === 'ADMIN' ? 'button--is-visible' : '' %>"

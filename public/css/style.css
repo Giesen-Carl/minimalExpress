@@ -124,3 +124,8 @@ h2 {
     margin-top: 0;
     font: 50px cookie, cursive;
 }
+
+#login-container {
+    display: flex;
+    justify-content: end;
+}

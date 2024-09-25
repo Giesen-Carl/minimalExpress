@@ -2,11 +2,11 @@ import 'dotenv/config';
 import express from 'express';
 import https from 'https';
 import fs from 'fs';
-import auth_router, { authUser, validateRole } from './auth_router.js';
+import auth_router, { authUser } from './auth_router.js';
 import cocktailRouter from './cocktailRouter.js';
 import database from './database/database.js';
 import Cocktail from './database/model/cocktailModel.js';
-import Bestellung from './database/model/bestellungModel.js';
+import bestellungRouter from './bestellungRouter.js';
 
 const privateKey = fs.readFileSync('cert/key.pem', 'utf8');
 const certificate = fs.readFileSync('cert/cert.pem', 'utf8');
@@ -19,6 +19,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(auth_router);
 app.use(cocktailRouter);
+app.use(bestellungRouter);
 
 app.get('/', authUser, async (req, res) => {
     const cocktails = await Cocktail.findAll();
@@ -41,27 +42,6 @@ app.get('/', authUser, async (req, res) => {
     }
     res.render('cocktails', { data: data, config: config })
 });
-
-app.post('/bestellung', authUser, validateRole('USER'), async (req, res) => {
-    const body = req.body;
-    const username = body.username;
-    const cocktail = body.cocktail;
-    await Bestellung.create({ username, cocktail })
-    res.status(200).redirect(req.query.redirect);
-});
-
-app.post('/bestellung/delete/:name', async (req, res) => {
-    const paramName = req.params.name;
-    try {
-        const Bestellung = await Bestellung.findOne({ where: { name: paramName } })
-        await cocktail.destroy();
-    } catch (e) {
-        console.log(e);
-    }
-    console.log(req.query)
-    res.redirect('/')
-});
-
 const start = async () => {
     await database.sync();
     httpsServer.listen(443, () => console.log(`Server is running at http://localhost:${443}`));

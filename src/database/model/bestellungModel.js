@@ -1,28 +1,25 @@
 import { DataTypes } from 'sequelize';
 import database from '../database.js';
 
-const Cocktail = database.define('Cocktail', {
-    cocktailIdent: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        primaryKey: true,
-    },
-    category: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    price: {
+const Bestellung = database.define('Bestellung', {
+    id: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
     },
-    description: {
+    username: {
         type: DataTypes.STRING,
         allowNull: false,
-    }
+    },
+    cocktail: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
 },
     {
-        tableName: 'Cocktail',
+        tableName: 'Bestellung',
         timestamps: false
     });
 
-export default Cocktail;
+export default Bestellung;

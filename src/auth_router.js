@@ -90,7 +90,7 @@ export const authUser = async (req, res, next) => {
 // Login function
 async function login(username, password) {
     const user = await User.findOne({ where: { username: username } })
-    const id = user.id;
+    const id = user?.id;
     if (!id) {
         throw new Error('No Account found with this username');
     }
@@ -145,7 +145,7 @@ function hash(data) {
 // Helper function to generate a token
 async function generateToken(id) {
     const secret = process.env.PASSWORD_HASH_SECRET;
-    const options = { expiresIn: '1h' };
+    const options = { expiresIn: '10h' };
     const payload = {
         id: id,
     }
@@ -154,10 +154,20 @@ async function generateToken(id) {
 }
 
 // Middleware to redirect
-function redirect(req, res, next) {
+export function redirect(req, res, next) {
     req.redirect = req.query.redirect ?? default_redirect;
     req.redirect_param = `?redirect=${req.redirect}`;
     next();
 };
+
+// validate Role
+export function validateRole(role) {
+    return (req, res, next) => {
+        if (req.user?.role !== role) {
+            throw new Error('Du besitzt nicht die benötigten Rechte um diese Seite zu öffnen.')
+        }
+        next();
+    }
+}
 
 export default auth_router;

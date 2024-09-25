@@ -45,14 +45,14 @@
                 <% data.items.forEach(element=> { %>
                     <div class="item">
                         <div class="item__header">
-                            <form action="/cocktails/delete/<%= element.name %><%= locals.config.redirect %>"
+                            <form action="/cocktails/delete/<%= element.cocktailIdent %><%= locals.config.redirect %>"
                                 method="post">
                                 <button
                                     class="visibility-button <%= locals.config.role === 'ADMIN' ? 'button--is-visible' : '' %>"
                                     type="submit">x</button>
                             </form>
                             <h3 class="item__title">
-                                <%= element.name %>
+                                <%= element.cocktailIdent %>
                             </h3>
                             <span class="item__dots"></span>
                             <span class="item__price">

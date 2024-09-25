@@ -7,7 +7,9 @@
     "start": "node src/server.js",
     "devStart": "nodemon src/server.js",
     "genenv": "node generateEnv.js",
-    "gencert": "node genDevCertificate.js"
+    "gencert": "node genDevCertificate.js",
+    "role": "node changeRole",
+    "dev": "node testingScript"
   },
   "author": "ME",
   "license": "UNLICENSED",

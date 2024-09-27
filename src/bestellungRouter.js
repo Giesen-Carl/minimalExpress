@@ -1,5 +1,5 @@
 import express from 'express';
-import { authUser, Role, validateRole } from './auth_router.js';
+import { auth, authUser, Role, validateRole } from './auth_router.js';
 import cookieParser from 'cookie-parser';
 import Bestellung from './database/model/bestellungModel.js';
 import User from './database/model/userModel.js';
@@ -7,11 +7,37 @@ import Cocktail from './database/model/cocktailModel.js';
 import bodyParser from 'body-parser';
 import { redirect } from './auth_router.js';
 
+const BestellStatus = {
+    IN_PROGRESS: 'IN_PROGRESS',
+    FINISHED: 'FINISHED',
+}
+
 const bestellungRouter = express.Router();
 bestellungRouter.use(cookieParser());
 bestellungRouter.use(express.urlencoded({ extended: true }));
 bestellungRouter.use(bodyParser.json());
 bestellungRouter.use(redirect);
+
+const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' })
+
+bestellungRouter.get('/bestellung', auth, async (req, res) => {
+    const bestellungenDB = await Bestellung.findAll();
+    const bestellungen = await Promise.all(bestellungenDB.map(b => {
+        const timeString = dateFormat.format(new Date(b.createdAt)).replace(',', '');
+        return {
+            time: timeString,
+            username: b.username,
+            name: b.cocktail,
+            status: b.status,
+            id: b.id
+        }
+    }));
+    const config = {
+        username: req.user.username,
+        role: req.user.role,
+    };
+    res.render('bestellungen', { bestellungen, config })
+});
 
 bestellungRouter.post(
     '/bestellung/:cocktailIdent',
@@ -26,13 +52,24 @@ bestellungRouter.post(
         res.status(200).redirect(req.query.redirect);
     });
 bestellungRouter.post(
-    '/bestellung/delete/:cocktailIdent/:username',
+    '/bestellung/delete/:id',
     authUser,
     validateRole(Role.ADMIN),
     async (req, res) => {
         try {
             const params = req.params;
-            await bestellungEntfernen(params.cocktailIdent, params.username);
+            await bestellungEntfernen(params.id);
+        } catch (error) {}
+        res.redirect(req.query.redirect)
+    });
+bestellungRouter.post(
+    '/bestellung/complete/:id',
+    authUser,
+    validateRole(Role.ADMIN),
+    async (req, res) => {
+        try {
+            const params = req.params;
+            await bestellungAbschliessen(params.id);
         } catch (error) {}
         res.redirect(req.query.redirect)
     });
@@ -52,15 +89,26 @@ async function bestellungHinzufuegen(cocktailIdent, username) {
     if (!existingCocktail) {
         throw new Error(`The Cocktail ${cocktailIdent} does not exist.`);
     }
-    await Bestellung.create({ username: username, cocktail: cocktailIdent })
+    await Bestellung.create({ username: username, cocktail: cocktailIdent, status: BestellStatus.IN_PROGRESS })
 }
 
-async function bestellungEntfernen(cocktailIdent, username) {
-    const existingBestellung = await Bestellung.findOne({ where: { username: username, cocktail: cocktailIdent } });
+async function bestellungEntfernen(id) {
+    const existingBestellung = await Bestellung.findByPk(id);
     if (!existingBestellung) {
         throw new Error(`Es existiert keine Bestellung für ${cocktailIdent} von ${username}`);
     }
     await existingBestellung.destroy();
+}
+
+async function bestellungAbschliessen(id) {
+    const existingBestellung = await Bestellung.findByPk(id);
+    if (!existingBestellung) {
+        throw new Error(`Es existiert keine Bestellung für ${cocktailIdent} von ${username}`);
+    }
+    if (existingBestellung.status !== BestellStatus.IN_PROGRESS) {
+        throw new Error('Die Bestellung ist nicht in progress');
+    }
+    await existingBestellung.update({ status: BestellStatus.FINISHED });
 }
 
 export default bestellungRouter;

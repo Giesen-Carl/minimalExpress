@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fermantor - Die besten Cocktails in Düren</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+    <!-- partial:index.partial.html -->
+    <div class="wrapper">
+        <div id="login-container">
+            <% if (locals.config.username) { %>
+                <p>
+                    <%= locals.config.username %>
+                </p>
+                <form action="/logout?redirect=/" method="get">
+                    <button type="submit">Logout</button>
+                </form>
+                <% } else { %>
+                    <form action="/login?redirect=/" method="get">
+                        <button type="submit">Login</button>
+                    </form>
+                    <% } %>
+        </div>
+        <h2>Bestellungen</h2>
+        <div>
+            <table>
+                <tr>
+                    <th>Time</th>
+                    <% if (locals.config.role==='ADMIN' ) { %>
+                        <th>Username</th>
+                        <% } %>
+                            <th>Cocktail</th>
+                            <th>Status</th>
+                            <% if (locals.config.role==='ADMIN' ) { %>
+                                <th>Actions</th>
+                                <% } %>
+                </tr>
+                <% bestellungen.forEach(element=> { %>
+                    <tr>
+                        <td>
+                            <%= element.time %>
+                        </td>
+                        <% if (locals.config.role==='ADMIN' ) { %>
+                            <td>
+                                <%= element.username %>
+                            </td>
+                            <% } %>
+                                <td>
+                                    <%= element.name %>
+                                </td>
+                                <td>
+                                    <%= element.status %>
+                                </td>
+                                <% if (locals.config.role==='ADMIN' ) { %>
+                                    <td>
+                                        <% if (element.status==='IN_PROGRESS' ) { %>
+                                            <form action="/bestellung/complete/<%= element.id %>?redirect=/bestellung"
+                                                method="post">
+                                                <button type="submit">
+                                                    complete
+                                                </button>
+                                            </form>
+                                            <% } else { %>
+                                                <form action="/bestellung/delete/<%= element.id %>?redirect=/bestellung"
+                                                    method="post">
+                                                    <button type="submit">
+                                                        delete
+                                                    </button>
+                                                </form>
+                                                <% } %>
+                                    </td>
+                                    <% } %>
+                    </tr>
+                    <% }); %>
+            </table>
+        </div>
+
+    </div> <!-- End Wrapper -->
+    <!-- partial -->
+    <script src="scripts/scripts.js"></script>
+</body>
+
+</html>

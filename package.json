@@ -6,10 +6,11 @@
   "scripts": {
     "start": "node src/server.js",
     "devStart": "nodemon src/server.js",
-    "genenv": "node generateEnv.js",
-    "gencert": "node genDevCertificate.js",
-    "role": "node changeRole",
-    "dev": "node testingScript"
+    "genenv": "node scripts/generateEnv.js",
+    "gencert": "node scripts/genDevCertificate.js",
+    "role": "node scripts/changeRole",
+    "dev": "node scripts/testingScript",
+    "db": "node scripts/init_db"
   },
   "author": "ME",
   "license": "UNLICENSED",

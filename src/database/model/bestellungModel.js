@@ -16,10 +16,14 @@ const Bestellung = database.define('Bestellung', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    }
 },
     {
         tableName: 'Bestellung',
-        timestamps: false
+        timestamps: true
     });
 
 export default Bestellung;

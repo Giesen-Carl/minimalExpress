@@ -1,4 +1,4 @@
-import { changeRole } from "./src/auth_router.js";
+import { changeRole } from "../src/auth_router.js";
 try {
     const args = process.argv;
     const username = args[args.indexOf('-u') + 1];

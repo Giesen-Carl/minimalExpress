@@ -129,3 +129,14 @@ h2 {
     display: flex;
     justify-content: end;
 }
+
+table {
+    width: 100%;
+    text-align: center;
+}
+
+table,
+th,
+td {
+    border: 1px solid;
+}

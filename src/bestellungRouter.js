@@ -39,6 +39,29 @@ bestellungRouter.get('/bestellung', auth, async (req, res) => {
     res.render('bestellungen', { bestellungen, config })
 });
 
+bestellungRouter.get(
+    '/bestellungen',
+    authUser,
+    async (req, res) => {
+        let bestellungenDB;
+        if (req.user.role === Role.USER) {
+            bestellungenDB = await Bestellung.findAll({ where: { username: req.user.username } });
+        } else if (req.user.role === Role.ADMIN) {
+            bestellungenDB = await Bestellung.findAll();
+        }
+        const bestellungen = await Promise.all(bestellungenDB.map(b => {
+            const timeString = dateFormat.format(new Date(b.createdAt)).replace(',', '');
+            return {
+                time: timeString,
+                username: b.username,
+                name: b.cocktail,
+                status: b.status,
+                id: b.id
+            }
+        }));
+        res.json(bestellungen);
+    });
+
 bestellungRouter.post(
     '/bestellung/:cocktailIdent',
     authUser,

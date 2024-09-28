@@ -15,6 +15,9 @@
     <div class="wrapper">
         <div id="login-container">
             <% if (locals.config.username) { %>
+                <form action="/" method="get">
+                    <button type="submit">Cocktails</button>
+                </form>
                 <p>
                     <%= locals.config.username %>
                 </p>
@@ -29,61 +32,84 @@
         </div>
         <h2>Bestellungen</h2>
         <div>
-            <table>
-                <tr>
-                    <th>Time</th>
-                    <% if (locals.config.role==='ADMIN' ) { %>
-                        <th>Username</th>
-                        <% } %>
-                            <th>Cocktail</th>
-                            <th>Status</th>
-                            <% if (locals.config.role==='ADMIN' ) { %>
-                                <th>Actions</th>
-                                <% } %>
-                </tr>
-                <% bestellungen.forEach(element=> { %>
-                    <tr>
-                        <td>
-                            <%= element.time %>
-                        </td>
-                        <% if (locals.config.role==='ADMIN' ) { %>
-                            <td>
-                                <%= element.username %>
-                            </td>
-                            <% } %>
-                                <td>
-                                    <%= element.name %>
-                                </td>
-                                <td>
-                                    <%= element.status %>
-                                </td>
-                                <% if (locals.config.role==='ADMIN' ) { %>
-                                    <td>
-                                        <% if (element.status==='IN_PROGRESS' ) { %>
-                                            <form action="/bestellung/complete/<%= element.id %>?redirect=/bestellung"
-                                                method="post">
-                                                <button type="submit">
-                                                    complete
-                                                </button>
-                                            </form>
-                                            <% } else { %>
-                                                <form action="/bestellung/delete/<%= element.id %>?redirect=/bestellung"
-                                                    method="post">
-                                                    <button type="submit">
-                                                        delete
-                                                    </button>
-                                                </form>
-                                                <% } %>
-                                    </td>
-                                    <% } %>
-                    </tr>
-                    <% }); %>
-            </table>
+            <table id='bestellungen_table'></table>
         </div>
 
     </div> <!-- End Wrapper -->
     <!-- partial -->
     <script src="scripts/scripts.js"></script>
+    <script>
+        function pollData() {
+            fetch('/bestellungen')
+                .then(response => response.json())
+                .then(data => {
+                    const element = document.getElementById('bestellungen_table');
+                    if ("<%= locals.config.role %>" === 'USER') {
+                        const tableHeader = `
+                            <tr>
+                                <th>Time</th>
+                                <th>Cocktail</th>
+                                <th>Status</th>
+                            </tr>
+                        `;
+                        const tableRows = data.reduce((acc, cur) => {
+                            const row = `
+                            <tr>
+                                <td>${cur.time}</td>
+                                <td>${cur.name}</td>
+                                <td>${cur.status}</td>
+                            </tr>
+                        `;
+                            return acc + row;
+                        }, '');
+                        element.innerHTML = `${tableHeader}${tableRows}`;
+                    } else if ("<%= locals.config.role %>" === 'ADMIN') {
+                        const tableHeader = `
+                            <tr>
+                                <th>Time</th>
+                                <th>Username</th>
+                                <th>Cocktail</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        `;
+                        const tableRows = data.reduce((acc, cur) => {
+                            const completeAction = `
+                                <form action="/bestellung/complete/${cur.id}?redirect=/bestellung"
+                                    method="post">
+                                    <button type="submit">
+                                        complete
+                                    </button>
+                                </form>
+                            `;
+                            const deleteAction = `
+                                <form action="/bestellung/delete/${cur.id}?redirect=/bestellung"
+                                    method="post">
+                                    <button type="submit">
+                                        delete
+                                    </button>
+                                </form>
+                            `;
+                            const actions = cur.status === 'IN_PROGRESS' ? completeAction : deleteAction;
+                            const row = `
+                                <tr>
+                                    <td>${cur.time}</td>
+                                    <td>${cur.username}</td>
+                                    <td>${cur.name}</td>
+                                    <td>${cur.status}</td>
+                                    <td>${actions}</td>
+                                </tr>
+                            `;
+                            return acc + row;
+                        }, '');
+                        element.innerHTML = `${tableHeader}${tableRows}`;
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+        setInterval(pollData, 2000);
+        window.onload = pollData;
+    </script>
 </body>
 
 </html>

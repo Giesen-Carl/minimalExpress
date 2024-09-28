@@ -15,6 +15,9 @@
     <div class="wrapper">
         <div id="login-container">
             <% if (locals.config.username) { %>
+                <form action="/bestellung" method="get">
+                    <button type="submit">Bestellungen</button>
+                </form>
                 <p>
                     <%= locals.config.username %>
                 </p>

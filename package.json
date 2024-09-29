@@ -10,7 +10,8 @@
     "gencert": "node scripts/genDevCertificate.js",
     "role": "node scripts/changeRole",
     "dev": "node scripts/testingScript",
-    "db": "node scripts/init_db"
+    "db": "node scripts/init_db",
+    "migrate": "node scripts/migrate"
   },
   "author": "ME",
   "license": "UNLICENSED",

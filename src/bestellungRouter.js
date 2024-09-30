@@ -27,7 +27,7 @@ bestellungRouter.get('/bestellung', auth, async (req, res) => {
         return {
             time: timeString,
             username: b.username,
-            name: b.cocktail,
+            cocktailIdent: b.cocktailIdent,
             status: b.status,
             id: b.id
         }
@@ -56,7 +56,7 @@ bestellungRouter.get(
                 return {
                     time: timeString,
                     username: b.username,
-                    name: b.cocktail,
+                    cocktailIdent: b.cocktailIdent,
                     status: b.status,
                     id: b.id
                 }
@@ -115,7 +115,7 @@ async function bestellungHinzufuegen(cocktailIdent, username) {
     if (!existingCocktail) {
         throw new Error(`The Cocktail ${cocktailIdent} does not exist.`);
     }
-    await Bestellung.create({ username: username, cocktail: cocktailIdent, status: BestellStatus.IN_PROGRESS })
+    await Bestellung.create({ username: username, cocktailIdent: cocktailIdent, status: BestellStatus.IN_PROGRESS })
 }
 
 async function bestellungEntfernen(id) {

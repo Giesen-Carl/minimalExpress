@@ -12,7 +12,7 @@ const Bestellung = database.define('Bestellung', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    cocktail: {
+    cocktailIdent: {
         type: DataTypes.STRING,
         allowNull: false,
     },

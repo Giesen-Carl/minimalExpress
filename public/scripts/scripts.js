@@ -51,3 +51,15 @@ function handleClick(e) {
 window.addEventListener('load', initialHightlightLocation);
 window.addEventListener('resize', initialHightlightLocation);
 buttons.forEach(button => button.addEventListener('click', handleClick));
+
+const orderButtons = document.querySelectorAll('.order-button');
+function orderCocktail(cocktailIdent) {
+    fetch(`/bestellung/${cocktailIdent}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(err => console.log(err));
+}
+orderButtons.forEach(button => {
+    const cocktailIdent = button.getAttribute('cocktailIdent');
+    button.addEventListener('click', () => orderCocktail(cocktailIdent));
+});

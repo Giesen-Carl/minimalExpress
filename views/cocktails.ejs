@@ -61,14 +61,9 @@
                             <span class="item__price">
                                 <%= element.price %>&euro;
                             </span>
-                            <!-- Bestell Button Start -->
-                            <form action="/bestellung/<%= element.cocktailIdent %><%= locals.config.redirect %>"
-                                method="post">
-                                <button
-                                    class="visibility-button <%= locals.config.role === 'USER' ? 'button--is-visible' : '' %>"
-                                    type="submit">+</button>
-                            </form>
-                            <!-- Bestell Button Ende -->
+                            <% if (locals.config.role==='USER' ) { %>
+                                <button class="order-button" cocktailIdent="<%= element.cocktailIdent %>">+</button>
+                                <% } %>
                         </div>
                         <p class="item__description"><i>
                                 <% element.description.forEach(desc=> { %>

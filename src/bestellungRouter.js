@@ -75,7 +75,7 @@ bestellungRouter.post(
         } catch (error) {
             console.log(error)
         }
-        res.status(200).redirect(req.query.redirect);
+        res.status(200);
     });
 bestellungRouter.post(
     '/bestellung/delete/:id',

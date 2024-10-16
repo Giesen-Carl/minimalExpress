@@ -8,6 +8,9 @@ highlight.classList.add('highlight');
 // Set initial dimensions and position of 'highlight' based on activeButton coords 
 function initialHightlightLocation() {
     const activeButton = document.querySelector('.button--is-active');
+    if (!activeButton) {
+        return;
+    }
     const activeButtonCoords = activeButton.getBoundingClientRect();
 
     const initialCoords = {
@@ -52,14 +55,56 @@ window.addEventListener('load', initialHightlightLocation);
 window.addEventListener('resize', initialHightlightLocation);
 buttons.forEach(button => button.addEventListener('click', handleClick));
 
-const orderButtons = document.querySelectorAll('.order-button');
-function orderCocktail(cocktailIdent) {
-    fetch(`/bestellung/${cocktailIdent}`, { method: 'POST' })
-        .then(res => res.json())
-        .then(data => console.log(data))
-        .catch(err => console.log(err));
-}
+const orderButtons = document.querySelectorAll('.order-button-icon');
 orderButtons.forEach(button => {
     const cocktailIdent = button.getAttribute('cocktailIdent');
-    button.addEventListener('click', () => orderCocktail(cocktailIdent));
+    button.addEventListener('click', async () => {
+        await fetch(`/bestellung/${cocktailIdent}`, { method: 'POST' });
+    })
 });
+
+const deleteOrderButtons = document.querySelectorAll('.delete-order-button');
+deleteOrderButtons.forEach(button => {
+    const cocktailIdent = button.getAttribute('cocktailIdent');
+    button.addEventListener('click', async () => {
+        console.log('CLICK')
+        await fetch(`/bestellung/delete/${cocktailIdent}`, { method: 'POST' });
+    });
+});
+
+setButtonEvent('login-button', (button) => {
+    const redirect = button.getAttribute('redirect');
+    window.location.replace(`/login${redirect ? `?redirect=${redirect}` : ''}`);
+});
+setButtonEvent('logout-button', (button) => {
+    const redirect = button.getAttribute('redirect');
+    window.location.replace(`/logout${redirect ? `?redirect=${redirect}` : ''}`)
+});
+setButtonEvent('cocktail-create-button', () => {
+    redirect('/cocktails');
+});
+setButtonEvent('cocktails-button', () => {
+    redirect('/');
+});
+setButtonEvent('bestellung-button', () => {
+    redirect('/bestellung');
+});
+
+function setButtonEvent(buttonClassName, btnFnc) {
+    const button = document.querySelector(`.${buttonClassName}`);
+    button?.addEventListener('click', () => btnFnc(button));
+}
+
+function redirect(location) {
+    window.location.replace(location);
+}
+
+const orderButtonIcons = document.querySelectorAll('.order-button-icon');
+for (const orderButtonIcon of orderButtonIcons) {
+    orderButtonIcon.addEventListener('click', () => {
+        orderButtonIcon.classList.add('bouncing');
+        setTimeout(() => {
+            orderButtonIcon.classList.remove('bouncing');
+        }, 500);
+    });
+}

@@ -1,5 +1,6 @@
 :root {
     --wesbos: #ffc600;
+    scrollbar-width: none;
 }
 
 .menu {
@@ -118,13 +119,6 @@ body {
     padding: 20px;
 }
 
-h2 {
-    display: inline-block;
-    border-bottom: 4px solid var(--wesbos);
-    margin-top: 0;
-    font: 50px cookie, cursive;
-}
-
 #login-container {
     display: flex;
     justify-content: end;
@@ -139,4 +133,78 @@ table,
 th,
 td {
     border: 1px solid;
+}
+
+.header-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.header-title {
+    display: inline-block;
+    border-bottom: 4px solid var(--wesbos);
+    margin: 0;
+    font-family: cookie, cursive;
+    font-size: clamp(34px, 10vw, 50px);
+    white-space: nowrap;
+    margin-bottom: 25px;
+}
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-button {
+    background: transparent;
+    color: white;
+    display: inline-block;
+    padding: 6px;
+    height: 49px;
+    transition: transform 1s ease;
+}
+
+.header-button .username-text {
+    font-size: 14px;
+}
+
+.header-button .logout-text {
+    font-size: 11px;
+}
+
+.order-button-icon {
+    width: 25px;
+    height: 25px;
+    filter: invert(100%);
+    background: transparent;
+    transition: 0.1s;
+}
+
+.order-button-icon:hover {
+    scale: 1.1;
+    transition: 0.1s;
+}
+
+.bouncing {
+    animation: bounce 0.5s ease;
+}
+
+.delete-order-button {
+    cursor: pointer;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: scale(0.9);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
 }

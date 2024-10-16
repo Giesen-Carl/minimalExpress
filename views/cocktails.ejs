@@ -7,34 +7,36 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 </head>
 
 <body>
     <!-- partial:index.partial.html -->
     <div class="wrapper">
-        <div id="login-container">
-            <% if (locals.config.username) { %>
-                <form action="/bestellung" method="get">
-                    <button type="submit">Bestellungen</button>
-                </form>
-                <p>
-                    <%= locals.config.username %>
-                </p>
-                <form action="/logout?redirect=/" method="get">
-                    <button type="submit">Logout</button>
-                </form>
-                <% } else { %>
-                    <form action="/login?redirect=/" method="get">
-                        <button type="submit">Login</button>
-                    </form>
-                    <% } %>
-        </div>
-        <h2>Tristans mega leckere Cocktails</h2>
-        <form action="/cocktails" method="get">
-            <button class="visibility-button <%= locals.config.role === 'ADMIN' ? 'button--is-visible' : '' %>"
-                type="submit">+</button>
-        </form>
+        <header class="header-bar">
+            <div class="header-title">Tristans mega leckere Cocktails</div>
+            <div class="header-buttons">
+                <% if (locals.config.username) { %>
+                    <button class="header-button cocktail-create-button">
+                        <div>Cocktail erstellen</div>
+                    </button>
+                    <button class="header-button bestellung-button">
+                        <div>Bestellungen</div>
+                    </button>
+                    <button class="header-button logout-button" redirect="/">
+                        <div class="username-text">
+                            <%= locals.config.username %>
+                        </div>
+                        <div class="logout-text">logout</div>
+                    </button>
+                    <% } else { %>
+                        <button class="header-button login-button" redirect="/">
+                            <div>login</div>
+                        </button>
+                        <% } %>
+            </div>
+        </header>
 
         <div class="buttons-container">
             <% for (const data of locals.data) { %>
@@ -54,16 +56,17 @@
                                     class="visibility-button <%= locals.config.role === 'ADMIN' ? 'button--is-visible' : '' %>"
                                     type="submit">x</button>
                             </form>
-                            <h3 class="item__title">
-                                <%= element.cocktailIdent %>
-                            </h3>
-                            <span class="item__dots"></span>
-                            <span class="item__price">
-                                <%= element.price %>&euro;
-                            </span>
                             <% if (locals.config.role==='USER' ) { %>
-                                <button class="order-button" cocktailIdent="<%= element.cocktailIdent %>">+</button>
+                                <img class="order-button-icon" cocktailIdent="<%= element.cocktailIdent %>"
+                                    src="icons/add-to-cart.ico"></img>
                                 <% } %>
+                                    <h3 class="item__title">
+                                        <%= element.cocktailIdent %>
+                                    </h3>
+                                    <span class="item__dots"></span>
+                                    <span class="item__price">
+                                        <%= element.price %>&euro;
+                                    </span>
                         </div>
                         <p class="item__description"><i>
                                 <% element.description.forEach(desc=> { %>

@@ -13,28 +13,29 @@
 <body>
     <!-- partial:index.partial.html -->
     <div class="wrapper">
-        <div id="login-container">
-            <% if (locals.config.username) { %>
-                <form action="/" method="get">
-                    <button type="submit">Cocktails</button>
-                </form>
-                <p>
-                    <%= locals.config.username %>
-                </p>
-                <form action="/logout?redirect=/" method="get">
-                    <button type="submit">Logout</button>
-                </form>
-                <% } else { %>
-                    <form action="/login?redirect=/" method="get">
-                        <button type="submit">Login</button>
-                    </form>
-                    <% } %>
+        <div class="header-bar">
+            <div class="header-title">Bestellungen</div>
+            <div class="header-buttons">
+                <% if (locals.config.username) { %>
+                    <button class="header-button cocktails-button">
+                        <div>Cocktails</div>
+                    </button>
+                    <button class="header-button logout-button" redirect="/">
+                        <div class="username-text">
+                            <%= locals.config.username %>
+                        </div>
+                        <div class="logout-text">logout</div>
+                    </button>
+                    <% } else { %>
+                        <button class="header-button login-button" redirect="/">
+                            <div>login</div>
+                        </button>
+                        <% } %>
+            </div>
         </div>
-        <h2>Bestellungen</h2>
         <div>
             <table id='bestellungen_table'></table>
         </div>
-
     </div> <!-- End Wrapper -->
     <!-- partial -->
     <script src="scripts/scripts.js"></script>
@@ -83,6 +84,7 @@
                                 </form>
                             `;
                             const deleteAction = `
+                            <div class="delete-order-button" cocktailIdent="${cur.id}">DDD</div>
                                 <form action="/bestellung/delete/${cur.id}?redirect=/bestellung"
                                     method="post">
                                     <button type="submit">

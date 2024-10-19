@@ -38,7 +38,7 @@ app.get('/', authUser, async (req, res) => {
     const config = {
         role: req.user?.role,
         redirect: `?redirect=${req.url}`,
-        username: req.user?.username
+        username: req.user?.username,
     }
     res.render('cocktails', { data: data, config: config })
 });

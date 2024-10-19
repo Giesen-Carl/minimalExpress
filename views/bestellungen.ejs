@@ -11,31 +11,11 @@
 </head>
 
 <body>
-    <!-- partial:index.partial.html -->
     <div class="wrapper">
-        <div class="header-bar">
-            <div class="header-title">Bestellungen</div>
-            <div class="header-buttons">
-                <% if (locals.config.username) { %>
-                    <button class="header-button cocktails-button">
-                        <div>Cocktails</div>
-                    </button>
-                    <button class="header-button logout-button" redirect="/">
-                        <div class="username-text">
-                            <%= locals.config.username %>
-                        </div>
-                        <div class="logout-text">logout</div>
-                    </button>
-                    <% } else { %>
-                        <button class="header-button login-button" redirect="/">
-                            <div>login</div>
-                        </button>
-                        <% } %>
+        <%- include('partials/header.ejs', { headerTitle: 'Bestellungen' , headerButtons: ['cocktails-button'] } ) %>
+            <div>
+                <table id='bestellungen_table'></table>
             </div>
-        </div>
-        <div>
-            <table id='bestellungen_table'></table>
-        </div>
     </div> <!-- End Wrapper -->
     <!-- partial -->
     <script src="scripts/scripts.js"></script>

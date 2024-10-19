@@ -14,69 +14,50 @@
 <body>
     <!-- partial:index.partial.html -->
     <div class="wrapper">
-        <header class="header-bar">
-            <div class="header-title">Tristans mega leckere Cocktails</div>
-            <div class="header-buttons">
-                <% if (locals.config.username) { %>
-                    <button class="header-button cocktail-create-button">
-                        <div>Cocktail erstellen</div>
-                    </button>
-                    <button class="header-button bestellung-button">
-                        <div>Bestellungen</div>
-                    </button>
-                    <button class="header-button logout-button" redirect="/">
-                        <div class="username-text">
-                            <%= locals.config.username %>
-                        </div>
-                        <div class="logout-text">logout</div>
-                    </button>
-                    <% } else { %>
-                        <button class="header-button login-button" redirect="/">
-                            <div>login</div>
-                        </button>
-                        <% } %>
-            </div>
-        </header>
+        <%- include('partials/header.ejs', { headerTitle: 'Tristans mega leckere Cocktails' , headerButtons:
+            ['cocktail-create-button', 'bestellung-button' ] }) %>
 
-        <div class="buttons-container">
+            <div class="buttons-container">
+                <% for (const data of locals.data) { %>
+                    <a href="#" class="button <%= data === locals.data[0] ? ' button--is-active' : '' %>"
+                        data-target=<%=data.name + '-menu' %>><%= data.name%></a>
+                    <%}%>
+            </div>
+
             <% for (const data of locals.data) { %>
-                <a href="#" class="button <%= data === locals.data[0] ? 'button--is-active' : ''%>"
-                    data-target=<%=data.name + '-menu' %>><%= data.name%></a>
-                <%}%>
-        </div>
-
-        <% for (const data of locals.data) { %>
-            <div class="menu <%= data === locals.data[0] ? ' menu--is-visible' : '' %>" id=<%=data.name + '-menu' %>>
-                <% data.items.forEach(element=> { %>
-                    <div class="item">
-                        <div class="item__header">
-                            <form action="/cocktails/delete/<%= element.cocktailIdent %><%= locals.config.redirect %>"
-                                method="post">
-                                <button
-                                    class="visibility-button <%= locals.config.role === 'ADMIN' ? 'button--is-visible' : '' %>"
-                                    type="submit">x</button>
-                            </form>
-                            <% if (locals.config.role==='USER' ) { %>
-                                <img class="order-button-icon" cocktailIdent="<%= element.cocktailIdent %>"
-                                    src="icons/add-to-cart.ico"></img>
-                                <% } %>
-                                    <h3 class="item__title">
-                                        <%= element.cocktailIdent %>
-                                    </h3>
-                                    <span class="item__dots"></span>
-                                    <span class="item__price">
-                                        <%= element.price %>&euro;
-                                    </span>
+                <div class="menu <%= data === locals.data[0] ? ' menu--is-visible' : '' %>" id=<%=data.name + '-menu' %>
+                    >
+                    <% data.items.forEach(element=> { %>
+                        <div class="item">
+                            <div class="item__header">
+                                <form
+                                    action="/cocktails/delete/<%= element.cocktailIdent %><%= locals.config.redirect %>"
+                                    method="post">
+                                    <button
+                                        class="visibility-button <%= locals.config.role === 'ADMIN' ? 'button--is-visible' : '' %>"
+                                        type="submit">x</button>
+                                </form>
+                                <% if (locals.config.role==='USER' ) { %>
+                                    <img class="order-button-icon" cocktailIdent="<%= element.cocktailIdent %>"
+                                        src="icons/add-to-cart.ico"></img>
+                                    <% } %>
+                                        <h3 class="item__title">
+                                            <%= element.cocktailIdent %>
+                                        </h3>
+                                        <span class="item__dots"></span>
+                                        <span class="item__price">
+                                            <%= element.price %>&euro;
+                                        </span>
+                            </div>
+                            <p class="item__description"><i>
+                                    <% element.description.forEach(desc=> { %>
+                                        <%= desc %></br>
+                                            <% }); %>
+                                </i></p>
                         </div>
-                        <p class="item__description"><i>
-                                <% element.description.forEach(desc=> { %>
-                                    <%= desc %></br>
-                                        <% }); %>
-                            </i></p>
-                    </div>
-                    <% }); %>
-            </div>
-            <% } %>
+                        <% }); %>
+                </div>
+                <% } %>
 
     </div> <!-- End Wrapper -->
     <!-- partial -->

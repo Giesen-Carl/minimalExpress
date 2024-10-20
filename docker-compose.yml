@@ -1,0 +1,20 @@
+version: '3'
+services:
+  express_app:
+    build: .
+    container_name: express_app
+    expose:
+      - "3000"
+    restart: always
+    environment:
+      - NODE_ENV=production
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - express_app

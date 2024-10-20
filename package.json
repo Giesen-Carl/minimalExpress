@@ -11,7 +11,10 @@
     "role": "node scripts/changeRole",
     "dev": "node scripts/testingScript",
     "db": "node scripts/init_db",
-    "migrate": "node scripts/migrate"
+    "migrate": "node scripts/migrate",
+    "docker": "yarn docker:build & yarn docker:run",
+    "docker:build": "docker build -t express-app .",
+    "docker:run": "docker container run -p 3000:3000 express-app"
   },
   "author": "ME",
   "license": "UNLICENSED",

@@ -8,13 +8,13 @@ docker exec -i postgres_container psql -U admin -d express_db < dump.sql
 docker network create my_network
 
 # Save image
-docker save -o <target_image_name>.tar <source_image_name>:<source_tag>
+docker save -o express.tar express-app:latest
 
 # Load image
-docker load -i /path/to/destination/<target_image_name>.tar
+docker load -i /home/express.tar
 
 # Transfer image
-scp <target_image_name>.tar <username>@<server_ip>:/path/to/destination/
+scp express.tar root@87.106.208.200:/home
 
 # Run postgres
 docker run -d --name postgres_container --network my_network -p 5432:5432 postgres_image

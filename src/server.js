@@ -1,21 +1,15 @@
 import 'dotenv/config';
 import express from 'express';
-import https from 'https';
 import http from 'http';
-import fs from 'fs';
 import auth_router, { authUser } from './auth_router.js';
 import cocktailRouter from './cocktailRouter.js';
 import database from './database/database.js';
 import Cocktail from './database/model/cocktailModel.js';
 import bestellungRouter from './bestellungRouter.js';
 
-// const privateKey = fs.readFileSync('cert/key.pem', 'utf8');
-// const certificate = fs.readFileSync('cert/cert.pem', 'utf8');
-// const credentials = { key: privateKey, cert: certificate };
 
 const app = express();
 const httpServer = http.createServer(app);
-// const httpsServer = https.createServer(credentials, app);
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -46,7 +40,6 @@ app.get('/', authUser, async (req, res) => {
 });
 const start = async () => {
     await database.sync();
-    // httpsServer.listen(443, () => console.log(`Server is running at http://localhost:${443}`));
     httpServer.listen(3000, () => console.log(`Server is running at http://localhost:${3000}`));
 };
 

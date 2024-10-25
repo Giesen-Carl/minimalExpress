@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import Cocktail from "../src/database/model/cocktailModel.js";
 import fs from 'node:fs';
 

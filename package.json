@@ -13,8 +13,8 @@
     "db": "node scripts/init_db",
     "migrate": "node scripts/migrate",
     "docker": "yarn docker:build & yarn docker:run",
-    "docker:build": "docker build -t express-app .",
-    "docker:run": "docker container run -p 3000:3000 express-app"
+    "docker:build": "docker build --build-arg POSTGRES_PASSWORD=B6jHHjDT4S7x37xNbPi --build-arg PASSWORD_HASH_SECRET=d8f989764ff9ea304d51313b7f68bfc6 -t express-app .",
+    "docker:build-postgres": "docker build --build-arg POSTGRES_PASSWORD=B6jHHjDT4S7x37xNbPi -t postgres_image ./postgres"
   },
   "author": "ME",
   "license": "UNLICENSED",
@@ -27,6 +27,8 @@
     "express": "^4.19.2",
     "https": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.0",
+    "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.3",
     "sqlite3": "^5.1.7"
   },

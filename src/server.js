@@ -1,15 +1,18 @@
 import 'dotenv/config';
 import express from 'express';
 import http from 'http';
-import auth_router, { authUser } from './auth_router.js';
+import auth_router, { authUser, authws } from './auth_router.js';
 import cocktailRouter from './cocktailRouter.js';
 import database from './database/database.js';
 import Cocktail from './database/model/cocktailModel.js';
 import bestellungRouter from './bestellungRouter.js';
-
+import { mountBestellungRouter } from './bestellungRouter.js';
+import expressWs from 'express-ws';
 
 const app = express();
 const httpServer = http.createServer(app);
+expressWs(app, httpServer);
+mountBestellungRouter();
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -38,6 +41,9 @@ app.get('/', authUser, async (req, res) => {
     }
     res.render('cocktails', { data: data, config: config })
 });
+
+httpServer.on('upgrade', authws);
+
 const start = async () => {
     await database.sync();
     httpServer.listen(3000, () => console.log(`Server is running at http://localhost:${3000}`));

@@ -1,4 +1,4 @@
-import { createObject, createTableIfNotExists, dropAll } from "./queries.js";
+import { createDataFromJson, createObject, createTableIfNotExists, dropAll } from "./queries.js";
 import datatypes from "./datatypes.js";
 
 const schema = {
@@ -37,10 +37,7 @@ const schema = {
 const setupDB = async () => {
     await dropAll();
     await createTableIfNotExists(schema);
-    await createObject('Auth', {
-        uuid: 'b60081db-fe14-4791-955e-f8e27f648e62',
-        password: 'abcde',
-    })
+    await createDataFromJson();
 }
 
 export default setupDB;

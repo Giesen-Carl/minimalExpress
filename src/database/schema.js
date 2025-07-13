@@ -38,6 +38,7 @@ const setupDB = async () => {
     await dropAll();
     await createTableIfNotExists(schema);
     await createDataFromJson();
+    console.log('Setup Complete')
 }
 
 export default setupDB;

@@ -9,6 +9,7 @@ import bestellungRouter from './bestellungRouter.js';
 import { mountBestellungRouter } from './bestellungRouter.js';
 import expressWs from 'express-ws';
 import client, { init } from './database/db_client.js';
+import setupDB from './database/schema.js';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -46,11 +47,9 @@ app.get('/', authUser, async (req, res) => {
 httpServer.on('upgrade', authws);
 
 const start = async () => {
-    // await database.sync();
-    // httpServer.listen(3000, () => console.log(`Server is running at http://localhost:${3000}`));
     await init();
-    // process.on('SIGINT', shutdown);
-    // process.on('SIGTERM', shutdown);
+    // await setupDB();
+    httpServer.listen(3000, () => console.log(`Server is running at http://localhost:${3000}`));
 };
 
 start();

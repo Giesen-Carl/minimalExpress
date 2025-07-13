@@ -1,5 +1,12 @@
 import client from "./db_client.js";
 
+export async function dropAll() {
+    const dropSchemaQuery = 'DROP SCHEMA public CASCADE;'
+    const createSchemaQuery = 'CREATE SCHEMA public;'
+    await runQuery(dropSchemaQuery, 'Drop Schema')
+    await runQuery(createSchemaQuery, 'Create Public Schema')
+}
+
 export async function createTableIfNotExists(schema) {
     for (const [tableName, columns] of Object.entries(schema)) {
         if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
@@ -28,18 +35,24 @@ export async function createTableIfNotExists(schema) {
     }
 }
 
-export async function dropAll() {
-    const dropSchemaQuery = 'DROP SCHEMA public CASCADE;'
-    const createSchemaQuery = 'CREATE SCHEMA public;'
-    await runQuery(dropSchemaQuery, 'Drop Schema')
-    await runQuery(createSchemaQuery, 'Create Public Schema')
+export async function createObject(tableName, item) {
+    const columns = Object.keys(item);
+    const values = Object.values(item);
+    const placeholders = columns.map((_, i) => `$${i + 1}`);
+
+    const query = `
+      INSERT INTO "${tableName}" (${columns.map(col => `"${col}"`).join(', ')})
+      VALUES (${placeholders.join(', ')})
+      RETURNING *;
+    `;
+    await runQuery(query, 'Create Object', values);
 }
 
-async function runQuery(query, queryName) {
+async function runQuery(query, queryName, values) {
     try {
-        await client.query(query);
+        await client.query(query, values);
         console.log(`Query success:`, queryName);
     } catch (err) {
-        console.err(`Query error:`, err);
+        console.log(`Query error:`, err);
     }
 }

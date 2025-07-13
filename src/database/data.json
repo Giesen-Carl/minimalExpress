@@ -1,0 +1,368 @@
+{
+    "Rum": [
+        {
+            "name": "Fernando Sun",
+            "price": 2,
+            "ingredients": {
+                "vanille Rum": "4cl",
+                "Maracujasaft": "4cl",
+                "weißer Schokoladensirup": "2cl",
+                "Limettensaft": "2cl",
+                "Mango Marmelade": "1BL"
+            }
+        },
+        {
+            "name": "Mojito",
+            "price": 2,
+            "ingredients": {
+                "weißer Rum": "4.5cl",
+                "Limetten": "1/2",
+                "brauner Rohrzucker": "2 BL",
+                "Minze": "",
+                "Soda (top up)": ""
+            }
+        },
+        {
+            "name": "Pina colada",
+            "price": 2,
+            "ingredients": {
+                "weißer Rum": "4.5cl",
+                "Ananassaft": "45cl",
+                "Kokosnuss Cream": "3 BL"
+            }
+        },
+        {
+            "name": "Mai Tai",
+            "price": 3,
+            "ingredients": {
+                "weißer Rum": "3cl",
+                "brauner Rum": "3cl",
+                "Triple Sec": "1.5cl",
+                "Limettensaft": "2cl",
+                "Zuckersirup": "0.75cl",
+                "Orgeat": "75cl"
+            }
+        },
+        {
+            "name": "Daiquiri",
+            "price": 2,
+            "ingredients": {
+                "weißer Rum": "6cl",
+                "Limettensaft": "2cl",
+                "Zuckersirup": "1cl"
+            }
+        },
+        {
+            "name": "Lemon Daiquiri",
+            "price": 2,
+            "ingredients": {
+                "weißer Rum": "3cl",
+                "Triple Sec": "3cl",
+                "Zitronensaft": "4.5cl",
+                "Zuckersirup": "1.5cl"
+            }
+        },
+        {
+            "name": "Cuba Libre",
+            "price": 2,
+            "ingredients": {
+                "weißer Rum": "5cl",
+                "Limettensaft": "1cl",
+                "Cola": "top up"
+            }
+        },
+        {
+            "name": "Planters Punch",
+            "price": 2,
+            "ingredients": {
+                "gereifter Rum": "4.5cl",
+                "Limettensaft": "1.5cl",
+                "Zuckersirup": "3cl"
+            }
+        },
+        {
+            "name": "Jungle Bird",
+            "price": 2,
+            "ingredients": {
+                "gereifter Rum": "4.5cl",
+                "Limettensaft": "1.5cl",
+                "Zuckersirup": "12.5cl",
+                "Ananassaft": "4.5cl"
+            }
+        },
+        {
+            "name": "Rum Sour",
+            "price": 2,
+            "ingredients": {
+                "gereifter Rum": "3cl",
+                "Limettensaft": "2.5cl",
+                "Orangensaft": "2.5cl",
+                "Zuckersirup": "1.25cl",
+                "Eiklar": ""
+            }
+        }
+    ],
+    "Vodka": [
+        {
+            "name": "Caipiroska",
+            "price": 2,
+            "ingredients": {
+                "Vodka": "4.5cl",
+                "Limetten": "1/2",
+                "brauner Rohrzucker": "2 BL",
+                "Soda": ""
+            }
+        },
+        {
+            "name": "Sex on the Beach",
+            "price": 2,
+            "ingredients": {
+                "Vodka": "3cl",
+                "Pfirsichlikör": "3cl",
+                "Orangensaft": "4cl",
+                "Cranberrysaft": "4cl"
+            }
+        },
+        {
+            "name": "Vodka Sour",
+            "price": 2,
+            "ingredients": {
+                "Vodka": "6cl",
+                "Zitronensaft": "3cl",
+                "Zuckersirup": "1.5cl",
+                "Angostura Bitters": "",
+                "Eiklar": ""
+            }
+        },
+        {
+            "name": "Bay Breeze",
+            "price": 2,
+            "ingredients": {
+                "Vodka": "4cl",
+                "Ananassaft": "3cl",
+                "Cranberrysaft": "top up"
+            }
+        },
+        {
+            "name": "Cape Codder",
+            "price": 2,
+            "ingredients": {
+                "Vodka": "6cl",
+                "Limettensaft": "0.75cl",
+                "Cranberrysaft": "top up"
+            }
+        },
+        {
+            "name": "Absolute Hunk",
+            "price": 2,
+            "ingredients": {
+                "Vodka": "6cl",
+                "Limettensaft": "1.5cl",
+                "Ananassaft": "0.75cl",
+                "Sirup": "1.5cl"
+            }
+        },
+        {
+            "name": "Vodka Tonic",
+            "price": 2,
+            "ingredients": {
+                "Vodka": "5cl",
+                "Tonic Water": "top up"
+            }
+        }
+    ],
+    "Whiskey": [
+        {
+            "name": "Old Fashioned",
+            "price": 2,
+            "ingredients": {
+                "Bourbon": "4.5cl",
+                "Zuckersirup": "1cl",
+                "Bitters": "2 Dashes"
+            }
+        },
+        {
+            "name": "Horses Neck",
+            "price": 2,
+            "ingredients": {
+                "Bourbon": "4.5cl",
+                "Bitters": "2 Dashes",
+                "Ginger Ale": "top up"
+            }
+        },
+        {
+            "name": "Boulevardier",
+            "price": 2,
+            "ingredients": {
+                "Bourbon": "4.5cl",
+                "Campari": "3cl",
+                "süßer Wermut": "3cl"
+            }
+        },
+        {
+            "name": "Whiskey Sour",
+            "price": 2,
+            "ingredients": {
+                "Bourbon": "4.5cl",
+                "Zitronensaft": "2.5cl",
+                "Zuckersirup": "2cl",
+                "Bitters": "2 Dashes",
+                "Eiklar": ""
+            }
+        },
+        {
+            "name": "Manhatten",
+            "price": 2,
+            "ingredients": {
+                "Rye Whiskey": "4.5cl",
+                "süßer Wermut": "3cl",
+                "Peychaut Bitters": "2 Dashes"
+            }
+        }
+    ],
+    "Gin": [
+        {
+            "name": "Old Fashioned",
+            "price": 2,
+            "ingredients": {
+                "Bourbon": "4.5cl",
+                "Zuckersirup": "1cl",
+                "Bitters": "2 Dashes"
+            }
+        },
+        {
+            "name": "Horses Neck",
+            "price": 2,
+            "ingredients": {
+                "Bourbon": "4.5cl",
+                "Bitters": "2 Dashes",
+                "Ginger Ale": "top up"
+            }
+        },
+        {
+            "name": "Boulevardier",
+            "price": 2,
+            "ingredients": {
+                "Bourbon": "4.5cl",
+                "Campari": "3cl",
+                "süßer Wermut": "3cl"
+            }
+        },
+        {
+            "name": "Whiskey Sour",
+            "price": 2,
+            "ingredients": {
+                "Bourbon": "4.5cl",
+                "Zitronensaft": "2.5cl",
+                "Zuckersirup": "2cl",
+                "Bitters": "2 Dashes",
+                "Eiklar": ""
+            }
+        },
+        {
+            "name": "Manhatten",
+            "price": 2,
+            "ingredients": {
+                "Rye Whiskey": "4.5cl",
+                "süßer Wermut": "3cl",
+                "Peychaut Bitters": "2 Dashes"
+            }
+        }
+    ],
+    "Collins": [
+        {
+            "name": "Tom Collins",
+            "price": 2,
+            "ingredients": {
+                "Gin": "4.5cl",
+                "Zitronensaft": "3cl",
+                "Zuckersirup": "1.5cl",
+                "Soda": "top up"
+            }
+        },
+        {
+            "name": "Vodka Collins",
+            "price": 2,
+            "ingredients": {
+                "Vodka": "6cl",
+                "Zitronensaft": "3cl",
+                "Zuckersirup": "1.5cl",
+                "Soda": "top up"
+            }
+        },
+        {
+            "name": "Chicago Fizz",
+            "price": 2,
+            "ingredients": {
+                "weißer Rum": "3cl",
+                "Zitronensaft": "1.5cl",
+                "Zuckersirup": "0.75cl",
+                "Soda": "top up"
+            }
+        },
+        {
+            "name": "Cranberry Collins",
+            "price": 2,
+            "ingredients": {
+                "Raspberry Rum": "4cl",
+                "Zitronensaft": "1.5cl",
+                "Grenadine": "1cl",
+                "Cranberrysaft": "2.5cl",
+                "Soda": "top up"
+            }
+        },
+        {
+            "name": "Jose Collins",
+            "price": 2,
+            "ingredients": {
+                "Tequila": "6cl",
+                "Zitronensaft": "2.5cl",
+                "Zuckersirup": "1.5cl",
+                "Soda": "top up"
+            }
+        }
+    ],
+    "Spezial": [
+        {
+            "name": "Negroni",
+            "price": 2,
+            "ingredients": {
+                "Gin": "3cl",
+                "süßer Wermut": "3cl",
+                "Campari": "3cl"
+            }
+        },
+        {
+            "name": "Campari Spritz",
+            "price": 2,
+            "ingredients": {
+                "Prosecco": "9cl",
+                "Campari": "6cl",
+                "Wasser": "3cl"
+            }
+        },
+        {
+            "name": "Long Island Ice Tea",
+            "price": 2,
+            "ingredients": {
+                "Zitronensaft": "3cl",
+                "Zuckersirup": "2cl",
+                "Gin": "1.5cl",
+                "Vodka": "1.5cl",
+                "Triple Sec": "1.5cl",
+                "Tequila": "1.5cl",
+                "Rum": "1.5cl",
+                "Cola": "top up"
+            }
+        },
+        {
+            "name": "Tequila Sunrise",
+            "price": 2,
+            "ingredients": {
+                "Tequila": "4.5cl",
+                "Orangensaft": "9cl",
+                "Grenadine": "1.5cl"
+            }
+        }
+    ]
+}

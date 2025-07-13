@@ -22,7 +22,7 @@ const schema = {
         category: datatypes.STRING,
         price: datatypes.DOUBLE,
     },
-    Igredient: {
+    Ingredient: {
         name: datatypes.STRING,
         available: datatypes.BOOL,
     },

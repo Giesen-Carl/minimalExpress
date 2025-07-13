@@ -52,41 +52,78 @@ export async function createObject(tableName, item) {
 
 export async function createDataFromJson() {
     try {
-        const data = JSON.parse(fs.readFileSync('scripts/data/cocktails.json', 'utf8'));
-        createCocktailsFromJSON(data);
+        const data = JSON.parse(fs.readFileSync('src/database/data.json', 'utf8'));
+        await createCocktailsFromJSON(data);
+        await createIngredientsFromJSON(data);
+        await createCocktailIngredientsFromJSON(data);
     } catch (err) {
         console.log('ERROR:', err);
     }
 }
+
 async function createCocktailsFromJSON(data) {
-    try {
-        const messages = [];
-        for (const [category, items] of Object.entries(data)) {
-            for (const item of items) {
-                try {
-                    await createObject('Cocktail', {
-                        name: item.name,
-                        category: category,
-                        price: item.price,
-                    })
-                    messages.push(`[+++] Cocktail ${item.name} was created successfully`);
-                } catch (err) {
-                    messages.push(`[XXX] Cocktail ${item.name} could not be created`)
-                }
+    for (const [category, items] of Object.entries(data)) {
+        for (const item of items) {
+            await createObject('Cocktail', {
+                name: item.name,
+                category: category,
+                price: item.price,
+            })
+        }
+    }
+}
+
+async function createIngredientsFromJSON(data) {
+    const ingredientSet = new Set();
+    for (const items of Object.values(data)) {
+        for (const item of items) {
+            for (const key of Object.keys(item.ingredients)) {
+                ingredientSet.add(key);
             }
         }
-        for (const message of messages) {
-            console.log(message);
-        }
-    } catch (err) {
-        console.log(err)
     }
+    for (const ingredient of Array.from(ingredientSet)) {
+        await createObject('Ingredient', {
+            name: ingredient,
+            available: true,
+        })
+    }
+}
+
+async function createCocktailIngredientsFromJSON(data) {
+    const cocktails = {};
+    const ingredients = {};
+    (await getAllCocktails()).forEach((c) => cocktails[c.name] = c.id);
+    (await getAllIngredients()).forEach((i) => ingredients[i.name] = i.id);
+    for (const items of Object.values(data)) {
+        for (const item of items) {
+            const cocktailName = item.name;
+            for (const [ingredientName, menge] of Object.entries(item.ingredients)) {
+                await createObject('CocktailIngredient', {
+                    cocktailId: cocktails[cocktailName],
+                    ingredientId: ingredients[ingredientName],
+                    menge: menge,
+                });
+            }
+        }
+    }
+}
+
+async function getAllCocktails() {
+    const query = `SELECT * FROM "Cocktail"`;
+    return (await runQuery(query, 'Get all Cocktails')).rows
+}
+
+async function getAllIngredients() {
+    const query = `SELECT * FROM "Ingredient"`;
+    return (await runQuery(query, 'Get all Ingredients')).rows
 }
 
 async function runQuery(query, queryName, values) {
     try {
-        await client.query(query, values);
+        const res = await client.query(query, values);
         console.log(`Query success:`, queryName);
+        return res;
     } catch (err) {
         console.log(`Query error:`, err);
     }

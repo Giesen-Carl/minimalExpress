@@ -12,7 +12,7 @@ const client = new Client({
 
 export async function init() {
     await connect();
-    await setupDB();
+    // await setupDB();
     process.on('SIGINT', disconnect);
     process.on('SIGTERM', disconnect);
 }

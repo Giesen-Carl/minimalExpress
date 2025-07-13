@@ -53,8 +53,4 @@ const start = async () => {
     // process.on('SIGTERM', shutdown);
 };
 
-function shutdown() {
-    console.log('SHUTDOWN')
-}
-
 start();

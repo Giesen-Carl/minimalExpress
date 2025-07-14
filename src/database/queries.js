@@ -2,6 +2,8 @@ import 'dotenv/config';
 import client from "./db_client.js";
 import fs from 'node:fs';
 
+const LOG_SUCCESSFUL_QUERIES = false;
+
 export async function dropAll() {
     const dropSchemaQuery = 'DROP SCHEMA public CASCADE;'
     const createSchemaQuery = 'CREATE SCHEMA public;'
@@ -144,9 +146,45 @@ export async function getAllIngredients() {
 async function runQuery(query, queryName, values) {
     try {
         const res = await client.query(query, values);
-        console.log(`Query success:`, queryName);
+        if (LOG_SUCCESSFUL_QUERIES) {
+            console.log(`Query success:`, queryName);
+        }
         return res;
     } catch (err) {
         console.log(`Query error:`, err);
     }
+}
+
+export async function getPasswordFromUUID(uuid) {
+    const query = `SELECT password FROM auth WHERE uuid = '${uuid}'`;
+    const queryName = 'UUID -> Password'
+    return (await runQuery(query, queryName))?.rows[0]
+}
+
+export async function getUserByUsername(username) {
+    const query = `SELECT * FROM public.user WHERE username = '${username}'`;
+    const queryName = 'Get User by username'
+    return (await runQuery(query, queryName))?.rows[0]
+}
+
+export async function getUserByUUID(uuid) {
+    const query = `SELECT * FROM public.user WHERE uuid = '${uuid}'`;
+    const queryName = 'Get User by UUID'
+    return (await runQuery(query, queryName))?.rows[0];
+}
+
+export async function createAuth(uuid, password) {
+    await createObject('auth', { uuid, password });
+}
+
+export async function createUser(uuid, username, role) {
+    await createObject('user', { uuid, username, role });
+}
+
+export async function updateUserRole(username, role) {
+    const query = `UPDATE public.user
+        SET role = '${role}'
+        WHERE username = '${username}'`;
+    const queryName = 'Update User Role'
+    await runQuery(query, queryName);
 }

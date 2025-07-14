@@ -1,10 +1,9 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
-import Auth from './database/model/authModel.js';
-import User from './database/model/userModel.js';
 import jwt from 'jsonwebtoken'
 import bodyParser from 'body-parser';
+import { createAuth, createUser, getPasswordFromUUID, getUserByUsername, getUserByUUID } from './database/queries.js';
 
 // Constants
 const default_redirect = '/';
@@ -68,7 +67,7 @@ export const auth = async (req, res, next) => {
             throw Error('No Token Provided')
         }
         const id = jwt.verify(token, secret).id;
-        req.user = await User.findByPk(id);;
+        req.user = await getUserByUUID(id);
         next();
     } catch (err) {
         return res.redirect('/login?redirect=' + req.url);
@@ -90,7 +89,7 @@ export const authws = (req, socket, head) => {
             return;
         }
         const userId = decoded.id;
-        req.user = await User.findByPk(userId);
+        req.user = await getUserByUUID(userId);
     });
 };
 
@@ -99,8 +98,8 @@ export const authUser = async (req, res, next) => {
     const secret = process.env.PASSWORD_HASH_SECRET;
     if (token) {
         try {
-            const id = jwt.verify(token, secret).id;
-            req.user = await User.findByPk(id);
+            const uuid = jwt.verify(token, secret).id;
+            req.user = await getUserByUUID(uuid);
         } catch (error) {}
     }
     next();
@@ -108,12 +107,18 @@ export const authUser = async (req, res, next) => {
 
 // Login function
 async function login(username, password) {
-    const user = await User.findOne({ where: { username: username } })
-    const id = user?.id;
-    if (!id) {
+    const user = await getUserByUsername(username);
+    if (user.length > 1) {
+        throw new Error('There are two users with this username. How tho?');
+    }
+    if (user.length === 0) {
         throw new Error('No Account found with this username');
     }
-    const expectedPassword = await Auth.findByPk(id);
+    const uuid = user[0]?.uuid;
+    if (uuid === undefined) {
+        throw new Error('There was a problem during login. Pls contact you admin.');
+    }
+    const expectedPassword = await getPasswordFromUUID(uuid);
     if (!expectedPassword) {
         throw new Error('There was a problem during login. Pls contact you admin.');
     }
@@ -121,7 +126,7 @@ async function login(username, password) {
     if (!hashedPassword || expectedPassword.password !== hashedPassword) {
         throw new Error('wrong password entered');
     }
-    return await generateToken(id);
+    return await generateToken(uuid);
 }
 
 // signup function
@@ -129,27 +134,17 @@ async function signup(username, password, confirm_password) {
     if (password !== confirm_password) {
         throw new Error('Passwords do not match');
     }
-    const existingUser = await Auth.findByPk(username);
+    const existingUser = await getUserByUsername(username);
+    console.log('DEBUG', existingUser)
     if (existingUser) {
         throw new Error('User already exists');
     }
     const hashedPassword = hash(password);
     const id = crypto.randomUUID();
     const role = Role.USER;
-    await Auth.create({ id, password: hashedPassword });
-    await User.create({ id, username, role });
+    await createAuth(id, hashedPassword);
+    await createUser(id, username, role);
     return await generateToken(id);
-}
-
-export async function changeRole(username, role) {
-    const user = await User.findOne({ where: { username: username } });
-    if (!user) {
-        throw new Error(`The user ${username} could not be found.`)
-    }
-    if (!Object.values(Role).includes(role)) {
-        throw new Error(`The Role ${role} does not exist.`)
-    }
-    user.update({ role: role })
 }
 
 // Create Hash

@@ -31,18 +31,18 @@
                         <div class="item">
                             <div class="item__header">
                                 <form
-                                    action="/cocktails/delete/<%= element.cocktailIdent %><%= locals.config.redirect %>"
+                                    action="/cocktails/delete/<%= element.cocktail_name %><%= locals.config.redirect %>"
                                     method="post">
                                     <button
                                         class="visibility-button <%= locals.config.role === 'ADMIN' ? 'button--is-visible' : '' %>"
                                         type="submit">x</button>
                                 </form>
                                 <% if (locals.config.role==='USER' ) { %>
-                                    <img class="order-button-icon" cocktailIdent="<%= element.cocktailIdent %>"
+                                    <img class="order-button-icon" cocktail_name="<%= element.cocktail_name %>"
                                         src="icons/add-to-cart.ico"></img>
                                     <% } %>
                                         <h3 class="item__title">
-                                            <%= element.cocktailIdent %>
+                                            <%= element.cocktail_name %>
                                         </h3>
                                         <span class="item__dots"></span>
                                         <span class="item__price">
@@ -50,9 +50,10 @@
                                         </span>
                             </div>
                             <p class="item__description"><i>
-                                    <% element.description.forEach(desc=> { %>
-                                        <%= desc %></br>
-                                            <% }); %>
+                                    <% element.ingredients.forEach(ing=> { %>
+                                        <%= ing.menge %>
+                                            <%= ing.name %></br>
+                                                <% }); %>
                                 </i></p>
                         </div>
                         <% }); %>

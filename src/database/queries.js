@@ -64,8 +64,8 @@ export async function createDataFromJson() {
 async function createCocktailsFromJSON(data) {
     for (const [category, items] of Object.entries(data)) {
         for (const item of items) {
-            await createObject('Cocktail', {
-                name: item.name,
+            await createObject('cocktail', {
+                cocktail_name: item.name,
                 category: category,
                 price: item.price,
             })
@@ -83,8 +83,8 @@ async function createIngredientsFromJSON(data) {
         }
     }
     for (const ingredient of Array.from(ingredientSet)) {
-        await createObject('Ingredient', {
-            name: ingredient,
+        await createObject('ingredient', {
+            ingredient_name: ingredient,
             available: true,
         })
     }
@@ -93,15 +93,15 @@ async function createIngredientsFromJSON(data) {
 async function createCocktailIngredientsFromJSON(data) {
     const cocktails = {};
     const ingredients = {};
-    (await getAllCocktails()).forEach((c) => cocktails[c.name] = c.id);
-    (await getAllIngredients()).forEach((i) => ingredients[i.name] = i.id);
+    (await getAllCocktails()).forEach((c) => cocktails[c.cocktail_name] = c.id);
+    (await getAllIngredients()).forEach((i) => ingredients[i.ingredient_name] = i.id);
     for (const items of Object.values(data)) {
         for (const item of items) {
             const cocktailName = item.name;
             for (const [ingredientName, menge] of Object.entries(item.ingredients)) {
-                await createObject('CocktailIngredient', {
-                    cocktailId: cocktails[cocktailName],
-                    ingredientId: ingredients[ingredientName],
+                await createObject('cocktail_ingredient', {
+                    cocktail_id: cocktails[cocktailName],
+                    ingredient_id: ingredients[ingredientName],
                     menge: menge,
                 });
             }
@@ -109,13 +109,35 @@ async function createCocktailIngredientsFromJSON(data) {
     }
 }
 
-async function getAllCocktails() {
-    const query = `SELECT * FROM "Cocktail"`;
+export async function getAllCocktails() {
+    const query = `SELECT * FROM cocktail`;
     return (await runQuery(query, 'Get all Cocktails')).rows
 }
 
-async function getAllIngredients() {
-    const query = `SELECT * FROM "Ingredient"`;
+export async function getAllCocktailsWithIngredients() {
+    const cocktails = await getAllCocktails();
+    const cwi = await Promise.all(cocktails.map(async (cocktail) => {
+        const ingredients = await getIngredientsFromCocktail(cocktail.cocktail_name);
+        return {
+            ...cocktail,
+            ingredients: ingredients.map((ing) => { return { name: ing.ingredient_name, menge: ing.menge } }),
+            available: ingredients.every((ing) => ing.available === true),
+        }
+    }));
+    return cwi;
+}
+
+export async function getIngredientsFromCocktail(cocktailName) {
+    const query = `SELECT ingredient_name, menge, available
+        FROM cocktail
+        INNER JOIN cocktail_ingredient ON cocktail.id = cocktail_ingredient.cocktail_id
+        INNER JOIN ingredient ON ingredient.id = cocktail_ingredient.ingredient_id
+        WHERE cocktail_name = '${cocktailName}'`;
+    return (await runQuery(query, 'Get Cocktail Ingredients')).rows
+}
+
+export async function getAllIngredients() {
+    const query = `SELECT * FROM ingredient`;
     return (await runQuery(query, 'Get all Ingredients')).rows
 }
 

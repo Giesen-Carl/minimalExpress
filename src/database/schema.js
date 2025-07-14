@@ -2,33 +2,33 @@ import { createDataFromJson, createObject, createTableIfNotExists, dropAll } fro
 import datatypes from "./datatypes.js";
 
 const schema = {
-    User: {
+    user: {
         uuid: datatypes.UUID,
         username: datatypes.STRING,
         role: datatypes.STRING,
     },
-    Auth: {
+    auth: {
         uuid: datatypes.UUID,
         password: datatypes.STRING,
     },
-    Bestellung: {
+    bestellung: {
         username: datatypes.STRING,
-        cocktailName: datatypes.STRING,
+        cocktail_name: datatypes.STRING,
         status: datatypes.STRING,
         timestamp: datatypes.DATETIME,
     },
-    Cocktail: {
-        name: datatypes.STRING,
+    cocktail: {
+        cocktail_name: datatypes.STRING,
         category: datatypes.STRING,
         price: datatypes.DOUBLE,
     },
-    Ingredient: {
-        name: datatypes.STRING,
+    ingredient: {
+        ingredient_name: datatypes.STRING,
         available: datatypes.BOOL,
     },
-    CocktailIngredient: {
-        cocktailId: datatypes.INT,
-        ingredientId: datatypes.INT,
+    cocktail_ingredient: {
+        cocktail_id: datatypes.INT,
+        ingredient_id: datatypes.INT,
         menge: datatypes.STRING,
     }
 }

@@ -108,13 +108,10 @@ export const authUser = async (req, res, next) => {
 // Login function
 async function login(username, password) {
     const user = await getUserByUsername(username);
-    if (user.length > 1) {
-        throw new Error('There are two users with this username. How tho?');
-    }
-    if (user.length === 0) {
+    if (user === undefined) {
         throw new Error('No Account found with this username');
     }
-    const uuid = user[0]?.uuid;
+    const uuid = user.uuid;
     if (uuid === undefined) {
         throw new Error('There was a problem during login. Pls contact you admin.');
     }

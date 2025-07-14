@@ -132,7 +132,6 @@ async function signup(username, password, confirm_password) {
         throw new Error('Passwords do not match');
     }
     const existingUser = await getUserByUsername(username);
-    console.log('DEBUG', existingUser)
     if (existingUser) {
         throw new Error('User already exists');
     }

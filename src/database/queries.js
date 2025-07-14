@@ -113,7 +113,7 @@ async function createCocktailIngredientsFromJSON(data) {
 
 export async function getAllCocktails() {
     const query = `SELECT * FROM cocktail`;
-    return (await runQuery(query, 'Get all Cocktails')).rows
+    return await runQuery(query, 'Get all Cocktails')
 }
 
 export async function getAllCocktailsWithIngredients() {
@@ -135,12 +135,12 @@ export async function getIngredientsFromCocktail(cocktailName) {
         INNER JOIN cocktail_ingredient ON cocktail.id = cocktail_ingredient.cocktail_id
         INNER JOIN ingredient ON ingredient.id = cocktail_ingredient.ingredient_id
         WHERE cocktail_name = '${cocktailName}'`;
-    return (await runQuery(query, 'Get Cocktail Ingredients')).rows
+    return await runQuery(query, 'Get Cocktail Ingredients')
 }
 
 export async function getAllIngredients() {
     const query = `SELECT * FROM ingredient`;
-    return (await runQuery(query, 'Get all Ingredients')).rows
+    return await runQuery(query, 'Get all Ingredients')
 }
 
 async function runQuery(query, queryName, values) {
@@ -149,7 +149,7 @@ async function runQuery(query, queryName, values) {
         if (LOG_SUCCESSFUL_QUERIES) {
             console.log(`Query success:`, queryName);
         }
-        return res;
+        return res.rows;
     } catch (err) {
         console.log(`Query error:`, err);
     }
@@ -158,19 +158,19 @@ async function runQuery(query, queryName, values) {
 export async function getPasswordFromUUID(uuid) {
     const query = `SELECT password FROM auth WHERE uuid = '${uuid}'`;
     const queryName = 'UUID -> Password'
-    return (await runQuery(query, queryName))?.rows[0]
+    return (await runQuery(query, queryName))[0]
 }
 
 export async function getUserByUsername(username) {
     const query = `SELECT * FROM public.user WHERE username = '${username}'`;
     const queryName = 'Get User by username'
-    return (await runQuery(query, queryName))?.rows[0]
+    return (await runQuery(query, queryName))[0]
 }
 
 export async function getUserByUUID(uuid) {
     const query = `SELECT * FROM public.user WHERE uuid = '${uuid}'`;
     const queryName = 'Get User by UUID'
-    return (await runQuery(query, queryName))?.rows[0];
+    return (await runQuery(query, queryName))[0];
 }
 
 export async function createAuth(uuid, password) {
@@ -187,4 +187,10 @@ export async function updateUserRole(username, role) {
         WHERE username = '${username}'`;
     const queryName = 'Update User Role'
     await runQuery(query, queryName);
+}
+
+export async function getAllBestellungen() {
+    const query = `SELECT * FROM bestellung`;
+    const queryName = 'Get all Bestellungen';
+    return await runQuery(query, queryName);
 }

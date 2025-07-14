@@ -57,18 +57,18 @@ buttons.forEach(button => button.addEventListener('click', handleClick));
 
 const orderButtons = document.querySelectorAll('.order-button-icon');
 orderButtons.forEach(button => {
-    const cocktailIdent = button.getAttribute('cocktailIdent');
+    const cocktail_name = button.getAttribute('cocktail_name');
     button.addEventListener('click', async () => {
-        await fetch(`/bestellung/${cocktailIdent}`, { method: 'POST' });
+        await fetch(`/bestellung/${cocktail_name}`, { method: 'POST' });
     })
 });
 
 const deleteOrderButtons = document.querySelectorAll('.delete-order-button');
 deleteOrderButtons.forEach(button => {
-    const cocktailIdent = button.getAttribute('cocktailIdent');
+    const cocktail_name = button.getAttribute('cocktail_name');
     button.addEventListener('click', async () => {
         console.log('CLICK')
-        await fetch(`/bestellung/delete/${cocktailIdent}`, { method: 'POST' });
+        await fetch(`/bestellung/delete/${cocktail_name}`, { method: 'POST' });
     });
 });
 

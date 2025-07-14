@@ -194,3 +194,44 @@ export async function getAllBestellungen() {
     const queryName = 'Get all Bestellungen';
     return await runQuery(query, queryName);
 }
+
+export async function getBestellungenByUsername(username) {
+    const query = `SELECT * FROM bestellung WHERE username = '${username}'`;
+    const queryName = 'Get Bestellungen by Username';
+    return await runQuery(query, queryName);
+}
+
+export async function getAdminUUIDs() {
+    const query = `SELECT uuid FROM public.user WHERE role = 'ADMIN'`;
+    const queryName = 'Get Admin UUIDs';
+    return await runQuery(query, queryName);
+}
+
+export async function getBestellungByBestellungId(bestellung_id) {
+    const query = `SELECT * FROM bestellung WHERE id = '${bestellung_id}'`;
+    const queryName = 'Get Bestellung ID';
+    return (await runQuery(query, queryName))[0];
+}
+
+export async function getUserByBestellungId(bestellung_id) {
+    const query = `
+        SELECT public.user.uuid, public.user.username, public.user.role
+        FROM bestellung
+        INNER JOIN public.user ON public.user.username = bestellung.username
+        WHERE bestellung.id = '${bestellung_id}'
+    `;
+    const queryName = 'Get User by BestellungId';
+    return await runQuery(query, queryName);
+}
+
+export async function getCocktailByName(cocktail_name) {
+    const query = `SELECT * FROM cocktail WHERE cocktail_name = '${cocktail_name}'`;
+    const queryName = 'Get Cocktail by Name';
+    return (await runQuery(query, queryName))[0];
+}
+
+export async function deleteBestellungByBestellungId(bestellung_id) {
+    const query = `DELETE FROM bestellung WHERE id = '${bestellung_id}'`;
+    const queryName = 'Delete Bestellung by ID';
+    return await runQuery(query, queryName);
+}

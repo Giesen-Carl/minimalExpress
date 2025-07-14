@@ -10,7 +10,7 @@ import { mountBestellungRouter } from './bestellungRouter.js';
 import expressWs from 'express-ws';
 import client, { init } from './database/db_client.js';
 import setupDB from './database/schema.js';
-import { getAllBestellungen, getAllCocktails, getAllCocktailsWithIngredients, getIngredientsFromCocktail, getUserByUUID } from './database/queries.js';
+import { getAdminUUIDs, getAllBestellungen, getAllCocktails, getAllCocktailsWithIngredients, getBestellungenByUsername, getIngredientsFromCocktail, getUserByBestellungId, getUserByUUID } from './database/queries.js';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -46,8 +46,8 @@ const start = async () => {
     await init();
     // await setupDB();
     httpServer.listen(3000, () => console.log(`Server is running at http://localhost:${3000}`));
-    const b = await getAllBestellungen();
-    console.log(b)
+    // const b = await getUserByBestellungId('4');
+    // console.log(b)
 };
 
 start();

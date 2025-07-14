@@ -7,6 +7,7 @@ import Cocktail from './database/model/cocktailModel.js';
 import bodyParser from 'body-parser';
 import { redirect } from './auth_router.js';
 import jwt from 'jsonwebtoken';
+import { createObject, getAdminUUIDs, getAllBestellungen, getBestellungByBestellungId, getBestellungenByUsername, getCocktailByName, getUserByBestellungId, getUserByUsername, getUserByUUID } from './database/queries.js';
 
 const BestellStatus = {
     IN_PROGRESS: 'IN_PROGRESS',
@@ -22,17 +23,17 @@ bestellungRouter.use(redirect);
 const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' })
 
 bestellungRouter.get('/bestellung', auth, async (req, res) => {
-    const bestellungenDB = await Bestellung.findAll();
-    const bestellungen = await Promise.all(bestellungenDB.map(b => {
+    const bestellungenDB = await getAllBestellungen();
+    const bestellungen = bestellungenDB.map(b => {
         const timeString = dateFormat.format(new Date(b.createdAt)).replace(',', '');
         return {
             time: timeString,
             username: b.username,
-            cocktailIdent: b.cocktailIdent,
+            cocktail_name: b.cocktail_name,
             status: b.status,
             id: b.id
         }
-    }));
+    });
     const config = {
         username: req.user.username,
         role: req.user.role,
@@ -46,22 +47,22 @@ bestellungRouter.get(
     async (req, res) => {
         let bestellungenDB;
         if (req.user?.role === Role.USER) {
-            bestellungenDB = await Bestellung.findAll({ where: { username: req.user.username } });
+            bestellungenDB = await getBestellungenByUsername(req.user.username);
         } else if (req.user?.role === Role.ADMIN) {
-            bestellungenDB = await Bestellung.findAll();
+            bestellungenDB = await getAllBestellungen();
         }
         let bestellungen;
         if (bestellungenDB !== undefined) {
-            bestellungen = await Promise.all(bestellungenDB.map(b => {
+            bestellungen = bestellungenDB.map(b => {
                 const timeString = dateFormat.format(new Date(b.createdAt)).replace(',', '');
                 return {
                     time: timeString,
                     username: b.username,
-                    cocktailIdent: b.cocktailIdent,
+                    cocktail_name: b.cocktail_name,
                     status: b.status,
                     id: b.id
                 }
-            }));
+            });
         }
         res.json(bestellungen);
     });
@@ -69,11 +70,11 @@ bestellungRouter.get(
 const bestellungSession = [];
 function registerBestellungClient(user, ws) {
     bestellungSession.push({
-        userId: user.id,
+        user: user,
         ws: ws
     });
     ws.on('close', () => {
-        bestellungSession.splice(bestellungSession.findIndex(session => session.userId === user.id), 1);
+        bestellungSession.splice(bestellungSession.findIndex(session => session.user.uuid === user.uuid), 1);
     });
     console.log('👤 A user connected to Bestellung. Total:', bestellungSession.length);
 }
@@ -84,30 +85,30 @@ function getUserIdFromRequest(req) {
 async function findBestellungenByUser(user) {
     let bestellungenDB;
     if (user.role === Role.USER) {
-        bestellungenDB = await Bestellung.findAll({ where: { username: user.username } });
+        bestellungenDB = await getBestellungenByUsername(user.username);
     } else if (user.role === Role.ADMIN) {
-        bestellungenDB = await Bestellung.findAll();
+        bestellungenDB = await getAllBestellungen();
     }
     let bestellungen;
     if (bestellungenDB !== undefined) {
-        bestellungen = await Promise.all(bestellungenDB.map(b => {
+        bestellungen = bestellungenDB.map(b => {
             const timeString = dateFormat.format(new Date(b.createdAt)).replace(',', '');
             return {
                 time: timeString,
                 username: b.username,
-                cocktailIdent: b.cocktailIdent,
+                cocktail_name: b.cocktail_name,
                 status: b.status,
                 id: b.id
             }
-        }));
+        });
     }
     return bestellungen;
 }
 
 export const mountBestellungRouter = () => {
     bestellungRouter.ws('/bestellung/ws', async (ws, req) => {
-        const userId = getUserIdFromRequest(req);
-        const user = await User.findByPk(userId);
+        const uuid = getUserIdFromRequest(req);
+        const user = await getUserByUUID(uuid);
         if (!user) {
             ws.close();
             return;
@@ -119,81 +120,86 @@ export const mountBestellungRouter = () => {
     });
 };
 
-async function sendBestellungUpdateToClients(userId) {
-    const notifyIds = [...(await User.findAll({ where: { role: Role.ADMIN } })).map(user => user.id), userId];
+async function sendBestellungUpdateToClients(user) {
+    const adminUsers = await getAdminUUIDs();
+    const notifyUsers = [...adminUsers, user];
     for (const session of bestellungSession) {
-        if (notifyIds.includes(session.userId)) {
-            const user = await User.findByPk(session.userId);
-            const bestellungen = await findBestellungenByUser(user);
-            session.ws.send(JSON.stringify(bestellungen));
+        for (const user of notifyUsers) {
+            if (user.uuid === session.user.uuid) {
+                const bestellungen = await findBestellungenByUser(user);
+                session.ws.send(JSON.stringify(bestellungen));
+            }
         }
     }
 }
 
 bestellungRouter.post(
-    '/bestellung/:cocktailIdent',
+    '/bestellung/:cocktail_name',
     authUser,
     validateRole(Role.USER),
     async (req, res) => {
         try {
-            await bestellungHinzufuegen(req.params.cocktailIdent, req.user.username)
-            await sendBestellungUpdateToClients(req.user.id);
+            await bestellungHinzufuegen(req.params.cocktail_name, req.user.username)
+            await sendBestellungUpdateToClients(req.user);
         } catch (error) {
             console.log(error)
         }
         res.sendStatus(200);
     });
 bestellungRouter.post(
-    '/bestellung/delete/:id',
+    '/bestellung/delete/:bestellung_id',
     authUser,
     validateRole(Role.ADMIN),
     async (req, res) => {
         try {
             const params = req.params;
-            const username = (await Bestellung.findByPk(params.id)).username;
-            const user = await User.findOne({ where: { username: username } });
-            await bestellungEntfernen(params.id);
-            await sendBestellungUpdateToClients(user.id);
+            const user = await getUserByBestellungId(params.bestellung_id);
+            await bestellungEntfernen(params.bestellung_id);
+            await sendBestellungUpdateToClients(user);
         } catch (error) {}
         res.sendStatus(200);
     });
 bestellungRouter.post(
-    '/bestellung/complete/:id',
+    '/bestellung/complete/:bestellung_id',
     authUser,
     validateRole(Role.ADMIN),
     async (req, res) => {
         try {
             const params = req.params;
-            const username = (await Bestellung.findByPk(params.id)).username;
-            const user = await User.findOne({ where: { username: username } });
-            await bestellungAbschliessen(params.id);
-            await sendBestellungUpdateToClients(user.id);
+            const user = await getUserByBestellungId(params.bestellung_id);
+            await bestellungAbschliessen(params.bestellung_id);
+            await sendBestellungUpdateToClients(user);
         } catch (error) {}
         res.sendStatus(200);
     });
 
-async function bestellungHinzufuegen(cocktailIdent, username) {
+async function bestellungHinzufuegen(cocktail_name, username) {
     if (!username) {
         throw new Error('No username provided');
     }
-    if (!cocktailIdent) {
+    if (!cocktail_name) {
         throw new Error('No CocktailIdent provided');
     }
-    const existingUser = await User.findOne({ where: { username: username } });
-    if (!existingUser) {
+    const user = await getUserByUsername(username);
+    if (!user) {
         throw new Error(`The user ${username} does not exist.`);
     }
-    const existingCocktail = await Cocktail.findOne({ where: { cocktailIdent: cocktailIdent } });
-    if (!existingCocktail) {
-        throw new Error(`The Cocktail ${cocktailIdent} does not exist.`);
+    const cocktail = await getCocktailByName(cocktail_name);
+    if (!cocktail) {
+        throw new Error(`The Cocktail ${cocktail_name} does not exist.`);
     }
-    await Bestellung.create({ username: username, cocktailIdent: cocktailIdent, status: BestellStatus.IN_PROGRESS })
+    await createObject('bestellung', {
+        username: username,
+        cocktail_name: cocktail_name,
+        status: BestellStatus.IN_PROGRESS,
+        timestamp: new Date(),
+    })
 }
 
-async function bestellungEntfernen(id) {
-    const existingBestellung = await Bestellung.findByPk(id);
-    if (!existingBestellung) {
-        throw new Error(`Es existiert keine Bestellung für ${cocktailIdent} von ${username}`);
+async function bestellungEntfernen(bestellung_id) {
+    const bestellung = await getBestellungByBestellungId(bestellung_id);
+    if (!bestellung) {
+        throw new Error(`Es existiert keine Bestellung für ${cocktail_name} von ${username}`);
     }
     await existingBestellung.destroy();
 }
@@ -201,7 +207,7 @@ async function bestellungEntfernen(id) {
 async function bestellungAbschliessen(id) {
     const existingBestellung = await Bestellung.findByPk(id);
     if (!existingBestellung) {
-        throw new Error(`Es existiert keine Bestellung für ${cocktailIdent} von ${username}`);
+        throw new Error(`Es existiert keine Bestellung für ${cocktail_name} von ${username}`);
     }
     if (existingBestellung.status !== BestellStatus.IN_PROGRESS) {
         throw new Error('Die Bestellung ist nicht in progress');

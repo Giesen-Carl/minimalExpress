@@ -2,12 +2,10 @@ import express from 'express';
 import { auth, authUser, Role, validateRole } from './auth_router.js';
 import cookieParser from 'cookie-parser';
 import Bestellung from './database/model/bestellungModel.js';
-import User from './database/model/userModel.js';
-import Cocktail from './database/model/cocktailModel.js';
 import bodyParser from 'body-parser';
 import { redirect } from './auth_router.js';
 import jwt from 'jsonwebtoken';
-import { createObject, getAdminUUIDs, getAllBestellungen, getBestellungByBestellungId, getBestellungenByUsername, getCocktailByName, getUserByBestellungId, getUserByUsername, getUserByUUID } from './database/queries.js';
+import { completeBestellungByBestellungId, createObject, deleteBestellungByBestellungId, getAdminUUIDs, getAllBestellungen, getBestellungByBestellungId, getBestellungenByUsername, getCocktailByName, getUserByBestellungId, getUserByUsername, getUserByUUID } from './database/queries.js';
 
 const BestellStatus = {
     IN_PROGRESS: 'IN_PROGRESS',
@@ -25,7 +23,7 @@ const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeSt
 bestellungRouter.get('/bestellung', auth, async (req, res) => {
     const bestellungenDB = await getAllBestellungen();
     const bestellungen = bestellungenDB.map(b => {
-        const timeString = dateFormat.format(new Date(b.createdAt)).replace(',', '');
+        const timeString = dateFormat.format(new Date(b.timestamp)).replace(',', '');
         return {
             time: timeString,
             username: b.username,
@@ -54,7 +52,7 @@ bestellungRouter.get(
         let bestellungen;
         if (bestellungenDB !== undefined) {
             bestellungen = bestellungenDB.map(b => {
-                const timeString = dateFormat.format(new Date(b.createdAt)).replace(',', '');
+                const timeString = dateFormat.format(new Date(b.timestamp)).replace(',', '');
                 return {
                     time: timeString,
                     username: b.username,
@@ -92,7 +90,7 @@ async function findBestellungenByUser(user) {
     let bestellungen;
     if (bestellungenDB !== undefined) {
         bestellungen = bestellungenDB.map(b => {
-            const timeString = dateFormat.format(new Date(b.createdAt)).replace(',', '');
+            const timeString = dateFormat.format(new Date(b.timestamp)).replace(',', '');
             return {
                 time: timeString,
                 username: b.username,
@@ -201,18 +199,18 @@ async function bestellungEntfernen(bestellung_id) {
     if (!bestellung) {
         throw new Error(`Es existiert keine Bestellung für ${cocktail_name} von ${username}`);
     }
-    await existingBestellung.destroy();
+    await deleteBestellungByBestellungId(bestellung_id);
 }
 
-async function bestellungAbschliessen(id) {
-    const existingBestellung = await Bestellung.findByPk(id);
-    if (!existingBestellung) {
-        throw new Error(`Es existiert keine Bestellung für ${cocktail_name} von ${username}`);
+async function bestellungAbschliessen(bestellung_id) {
+    const bestellung = await getBestellungByBestellungId(bestellung_id);
+    if (!bestellung) {
+        throw new Error(`Es existiert keine Bestellung mit id '${bestellung_id}'`);
     }
-    if (existingBestellung.status !== BestellStatus.IN_PROGRESS) {
+    if (bestellung.status !== BestellStatus.IN_PROGRESS) {
         throw new Error('Die Bestellung ist nicht in progress');
     }
-    await existingBestellung.update({ status: BestellStatus.FINISHED });
+    await completeBestellungByBestellungId(bestellung_id);
 }
 
 export default bestellungRouter;

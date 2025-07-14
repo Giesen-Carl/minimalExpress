@@ -221,13 +221,23 @@ export async function getUserByBestellungId(bestellung_id) {
         WHERE bestellung.id = '${bestellung_id}'
     `;
     const queryName = 'Get User by BestellungId';
-    return await runQuery(query, queryName);
+    return await runQuery(query, queryName)[0];
 }
 
 export async function getCocktailByName(cocktail_name) {
     const query = `SELECT * FROM cocktail WHERE cocktail_name = '${cocktail_name}'`;
     const queryName = 'Get Cocktail by Name';
     return (await runQuery(query, queryName))[0];
+}
+
+export async function completeBestellungByBestellungId(bestellung_id) {
+    const query = `
+        UPDATE bestellung
+        SET status = 'FINISHED'
+        WHERE bestellung.id = '${bestellung_id}'
+    `;
+    const queryName = 'Update Bestellung to Finished';
+    return await runQuery(query, queryName);
 }
 
 export async function deleteBestellungByBestellungId(bestellung_id) {

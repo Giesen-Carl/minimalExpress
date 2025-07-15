@@ -1,6 +1,5 @@
 import pkg from "pg";
 const { Client } = pkg;
-import setupDB from "./schema.js";
 
 const client = new Client({
     user: "admin",

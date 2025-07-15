@@ -1,4 +1,4 @@
-import { createDataFromJson, createObject, createTableIfNotExists, dropAll } from "./queries.js";
+import { createDataFromJson, createTableIfNotExists, dropAll } from "./queries.js";
 import datatypes from "./datatypes.js";
 
 const schema = {

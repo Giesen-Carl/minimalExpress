@@ -19,6 +19,7 @@ ingredientRouter.get('/ingredient', auth, validateRole(Role.ADMIN), async (req, 
             name: ingredient.ingredient_name,
             availability: ingredient.available
         }))
+            .sort((a, b) => a.ingredient_name.localeCompare(b.ingredient_name))
     };
     const config = {
         username: req.user.username,

@@ -24,45 +24,21 @@ bestellungRouter.get('/bestellung', auth, async (req, res) => {
     const bestellungen = bestellungenDB.map(b => {
         const timeString = dateFormat.format(new Date(b.timestamp)).replace(',', '');
         return {
+            timestamp: b.timestamp,
             time: timeString,
             username: b.username,
             cocktail_name: b.cocktail_name,
             status: b.status,
             id: b.id
         }
-    });
+    })
+        .sort((a, b) => getTimeFromTimestamp(a.timestamp) - getTimeFromTimestamp(b.timestamp));
     const config = {
         username: req.user.username,
         role: req.user.role,
     };
     res.render('bestellungen', { bestellungen, config })
 });
-
-bestellungRouter.get(
-    '/bestellungen',
-    authUser,
-    async (req, res) => {
-        let bestellungenDB;
-        if (req.user?.role === Role.USER) {
-            bestellungenDB = await getBestellungenByUsername(req.user.username);
-        } else if (req.user?.role === Role.ADMIN) {
-            bestellungenDB = await getAllBestellungen();
-        }
-        let bestellungen;
-        if (bestellungenDB !== undefined) {
-            bestellungen = bestellungenDB.map(b => {
-                const timeString = dateFormat.format(new Date(b.timestamp)).replace(',', '');
-                return {
-                    time: timeString,
-                    username: b.username,
-                    cocktail_name: b.cocktail_name,
-                    status: b.status,
-                    id: b.id
-                }
-            });
-        }
-        res.json(bestellungen);
-    });
 
 const bestellungSession = [];
 function registerBestellungClient(user, ws) {
@@ -92,13 +68,15 @@ async function findBestellungenByUser(user) {
         bestellungen = bestellungenDB.map(b => {
             const timeString = dateFormat.format(new Date(b.timestamp)).replace(',', '');
             return {
+                timestamp: b.timestamp,
                 time: timeString,
                 username: b.username,
                 cocktail_name: b.cocktail_name,
                 status: b.status,
                 id: b.id
             }
-        });
+        })
+            .sort((a, b) => getTimeFromTimestamp(a.timestamp) - getTimeFromTimestamp(b.timestamp));
     }
     return bestellungen;
 }
@@ -211,6 +189,10 @@ async function bestellungAbschliessen(bestellung_id) {
         throw new Error('Die Bestellung ist nicht in progress');
     }
     await completeBestellungByBestellungId(bestellung_id);
+}
+
+function getTimeFromTimestamp(timestamp) {
+    return (new Date(timestamp)).getTime();
 }
 
 export default bestellungRouter;

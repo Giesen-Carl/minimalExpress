@@ -35,6 +35,7 @@ const schema = {
 
 
 const setupDB = async () => {
+    console.log('Setting up database...');
     await dropAll();
     await createTableIfNotExists(schema);
     await createDataFromJson();

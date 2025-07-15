@@ -221,7 +221,7 @@ export async function getUserByBestellungId(bestellung_id) {
         WHERE bestellung.id = '${bestellung_id}'
     `;
     const queryName = 'Get User by BestellungId';
-    return await runQuery(query, queryName)[0];
+    return (await runQuery(query, queryName))[0];
 }
 
 export async function getCocktailByName(cocktail_name) {

@@ -1,7 +1,6 @@
 import express from 'express';
 import { auth, authUser, Role, validateRole } from './auth_router.js';
 import cookieParser from 'cookie-parser';
-import Bestellung from './database/model/bestellungModel.js';
 import bodyParser from 'body-parser';
 import { redirect } from './auth_router.js';
 import jwt from 'jsonwebtoken';
@@ -72,10 +71,10 @@ function registerBestellungClient(user, ws) {
         ws: ws
     });
     ws.on('close', () => {
-        const user = bestellungSession.splice(bestellungSession.findIndex(session => session.user.uuid === user.uuid), 1)[0];
-        console.log(`User '${user.username}' disconnected`)
+        const removedUser = bestellungSession.splice(bestellungSession.findIndex(session => session.user.uuid === user.uuid), 1)[0].user;
+        console.log('[---]', `User '${removedUser.username}' disconnected`)
     });
-    console.log(`'${user.username}' connected to Bestellung. Total:`, bestellungSession.length);
+    console.log('[+++]', `'${user.username}' connected to Bestellung. Total: ${bestellungSession.length}`);
 }
 function getUserIdFromRequest(req) {
     const token = req.cookies.token;
@@ -123,9 +122,9 @@ async function sendBestellungUpdateToClients(user) {
     const adminUsers = await getAdminUUIDs();
     const notifyUsers = [...adminUsers, user];
     for (const session of bestellungSession) {
-        for (const user of notifyUsers) {
-            if (user.uuid === session.user.uuid) {
-                const bestellungen = await findBestellungenByUser(user);
+        for (const notifyUser of notifyUsers) {
+            if (notifyUser.uuid === session.user.uuid) {
+                const bestellungen = await findBestellungenByUser(session.user);
                 session.ws.send(JSON.stringify(bestellungen));
             }
         }

@@ -3,14 +3,14 @@ import express from 'express';
 import http from 'http';
 import auth_router, { authUser, authws } from './auth_router.js';
 import cocktailRouter from './cocktailRouter.js';
-import database from './database/database.js';
-import Cocktail from './database/model/cocktailModel.js';
 import bestellungRouter from './bestellungRouter.js';
 import { mountBestellungRouter } from './bestellungRouter.js';
 import expressWs from 'express-ws';
-import client, { init } from './database/db_client.js';
+import { init } from './database/db_client.js';
+import { getAllCocktailsWithIngredients } from './database/queries.js';
 import setupDB from './database/schema.js';
-import { getAdminUUIDs, getAllBestellungen, getAllCocktails, getAllCocktailsWithIngredients, getBestellungenByUsername, getIngredientsFromCocktail, getUserByBestellungId, getUserByUUID } from './database/queries.js';
+
+const CLEAN_DATABASE = false;
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -44,7 +44,10 @@ httpServer.on('upgrade', authws);
 
 const start = async () => {
     await init();
-    // await setupDB();
+    if (CLEAN_DATABASE) {
+        await setupDB();
+    }
+    await setupDB();
     httpServer.listen(3000, () => console.log(`Server is running at http://localhost:${3000}`));
     // const b = await getUserByBestellungId('4');
     // console.log(b)

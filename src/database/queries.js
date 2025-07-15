@@ -257,3 +257,15 @@ export async function deleteCocktailIngredientByCocktailId(cocktail_id) {
     const queryName = 'Delete Cocktail Ingredient by Cocktail ID';
     return await runQuery(query, queryName);
 }
+
+export async function deleteIngredientByName(ingredient_name) {
+    const query = `DELETE FROM ingredient WHERE ingredient_name = '${ingredient_name}'`;
+    const queryName = 'Delete Ingredient by Name';
+    return await runQuery(query, queryName);
+}
+
+export async function setIngredientAvailability(ingredient_name, available) {
+    const query = `UPDATE ingredient SET available = ${available} WHERE ingredient_name = '${ingredient_name}'`;
+    const queryName = 'Set Ingredient Availability';
+    return await runQuery(query, queryName);
+}

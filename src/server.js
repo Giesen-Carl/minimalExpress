@@ -9,6 +9,7 @@ import expressWs from 'express-ws';
 import { init } from './database/db_client.js';
 import { getAllCocktailsWithIngredients, getAllIngredients } from './database/queries.js';
 import setupDB from './database/schema.js';
+import ingredientRouter from './ingredientRouter.js';
 
 const CLEAN_DATABASE = false;
 
@@ -22,6 +23,7 @@ app.use(express.static('public'));
 app.use(auth_router);
 app.use(cocktailRouter);
 app.use(bestellungRouter);
+app.use(ingredientRouter);
 
 app.get('/', authUser, async (req, res) => {
     const cocktails = await getAllCocktailsWithIngredients();

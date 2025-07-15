@@ -12,14 +12,27 @@
     <div class="login-container">
         <h2>Create Cocktail</h2>
         <form action="/cocktails" method="POST">
-            <label for="cocktailIdent">Name</label>
-            <input type="text" id="cocktailIdent" name="cocktailIdent" value="<%= locals.cocktailIdent %>" required>
+            <label for="cocktail_name">Name</label>
+            <input type="text" id="cocktail_name" name="cocktail_name" value="<%= locals.cocktail_name %>" required>
             <label for="category">Category</label>
             <input type="text" id="category" name="category" value="<%= locals.category %>" required>
             <label for="price">Price</label>
             <input type="number" id="price" name="price" value="<%= locals.price %>" required>
-            <label for="description">Description</label>
-            <input type="text" id="description" name="description" value="<%= locals.description %>" required>
+            <label for="ingredients">Ingredients</label>
+            <ul id="ingredient_list">
+            </ul>
+            <input type="hidden" name="ingredients" id="ingredients" value="<%= locals.selected_ingredients %>"
+                required>
+
+            <div class="dropdown-container">
+                <div class="side-by-side">
+                    <select class="dropdown" type="text" id="ingredient_input" placeholder="Zutat"></select>
+                    <input type="text" id="menge_input" placeholder="Menge" />
+                </div>
+                <button class="add-ingredient-button" type="button" onclick="zutatHinzufügen()">Zutat
+                    hinzufügen</button>
+            </div>
+
             <div class="error-message" id="error-message">
                 <%= locals.error %>
             </div>
@@ -29,4 +42,41 @@
             <button class="cancel-button" type="submit">Abbrechen</button>
         </form>
     </div>
+    <data value="<%= locals.ingredients %>"></data>
+    <script>
+        const ingredients = document.querySelector('data').value.split(',');
+        const ingredient_selection_element = document.getElementById('ingredients');
+        const ingredient_selection = ingredient_selection_element.value ? JSON.parse(ingredient_selection_element.value) : [];
+        function zutatHinzufügen() {
+            const ingredient = document.getElementById('ingredient_input').value;
+            const menge = document.getElementById('menge_input').value;
+            ingredient_selection.push({ ingredient, menge });
+            document.getElementById('ingredients').value = JSON.stringify(ingredient_selection);
+            document.getElementById('ingredient_list').innerHTML += `<li>${menge} ${ingredient}</li>`;
+            removeIngredient(ingredient);
+        }
+        function loadIngredients() {
+            const ingredientInput = document.getElementById('ingredient_input');
+            ingredientInput.innerHTML = ''; // Clear existing options
+            for (const ingredient of ingredients) {
+                const option = document.createElement('option');
+                option.value = ingredient;
+                option.textContent = ingredient;
+                ingredientInput.appendChild(option);
+            }
+        }
+        function removeIngredient(ingredient) {
+            ingredients.splice(ingredients.findIndex(ing => ing === ingredient), 1);
+            loadIngredients();
+        }
+        function renderIngredientSelection() {
+            for (const ing of ingredient_selection) {
+                document.getElementById('ingredient_list').innerHTML += `<li>${ing.menge} ${ing.ingredient}</li>`;
+            }
+        }
+        window.onload = () => {
+            loadIngredients();
+            renderIngredientSelection();
+        };
+    </script>
 </body>

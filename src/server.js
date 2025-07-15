@@ -7,7 +7,7 @@ import bestellungRouter from './bestellungRouter.js';
 import { mountBestellungRouter } from './bestellungRouter.js';
 import expressWs from 'express-ws';
 import { init } from './database/db_client.js';
-import { getAllCocktailsWithIngredients } from './database/queries.js';
+import { getAllCocktailsWithIngredients, getAllIngredients } from './database/queries.js';
 import setupDB from './database/schema.js';
 
 const CLEAN_DATABASE = false;
@@ -47,9 +47,8 @@ const start = async () => {
     if (CLEAN_DATABASE) {
         await setupDB();
     }
-    await setupDB();
     httpServer.listen(3000, () => console.log(`Server is running at http://localhost:${3000}`));
-    // const b = await getUserByBestellungId('4');
+    // const b = (await getAllIngredients()).map(ing => ing.ingredient_name);
     // console.log(b)
 };
 

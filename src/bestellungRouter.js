@@ -1,10 +1,7 @@
 import express from 'express';
 import { auth, authUser, Role, validateRole } from './auth_router.js';
-import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
-import { redirect } from './auth_router.js';
-import jwt from 'jsonwebtoken';
 import { completeBestellungByBestellungId, createObject, deleteBestellungByBestellungId, getAdminUUIDs, getAllBestellungen, getBestellungByBestellungId, getBestellungenByUsername, getCocktailByName, getUserByBestellungId, getUserByUsername, getUserByUUID } from './database/queries.js';
+import WebsocketManager from './websockerManager.js';
 
 const BestellStatus = {
     IN_PROGRESS: 'IN_PROGRESS',
@@ -12,10 +9,11 @@ const BestellStatus = {
 }
 
 const bestellungRouter = express.Router();
-bestellungRouter.use(cookieParser());
-bestellungRouter.use(express.urlencoded({ extended: true }));
-bestellungRouter.use(bodyParser.json());
-bestellungRouter.use(redirect);
+const dataSend = async (user) => {
+    const bestellungen = await findBestellungenByUser(user);
+    return JSON.stringify(bestellungen);
+}
+const wm = new WebsocketManager(bestellungRouter, '/bestellung', dataSend);
 
 const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' })
 
@@ -40,22 +38,6 @@ bestellungRouter.get('/bestellung', auth, async (req, res) => {
     res.render('bestellungen', { bestellungen, config })
 });
 
-const bestellungSession = [];
-function registerBestellungClient(user, ws) {
-    bestellungSession.push({
-        user: user,
-        ws: ws
-    });
-    ws.on('close', () => {
-        const removedUser = bestellungSession.splice(bestellungSession.findIndex(session => session.user.uuid === user.uuid), 1)[0].user;
-        console.log('[---]', `User '${removedUser.username}' disconnected`)
-    });
-    console.log('[+++]', `'${user.username}' connected to Bestellung. Total: ${bestellungSession.length}`);
-}
-function getUserIdFromRequest(req) {
-    const token = req.cookies.token;
-    return token ? jwt.verify(token, process.env.PASSWORD_HASH_SECRET).id : null;
-}
 async function findBestellungenByUser(user) {
     let bestellungenDB;
     if (user.role === Role.USER) {
@@ -81,32 +63,10 @@ async function findBestellungenByUser(user) {
     return bestellungen;
 }
 
-export const mountBestellungRouter = () => {
-    bestellungRouter.ws('/bestellung/ws', async (ws, req) => {
-        const uuid = getUserIdFromRequest(req);
-        const user = await getUserByUUID(uuid);
-        if (!user) {
-            ws.close();
-            return;
-        }
-        console.log('WebSocket connection established');
-        registerBestellungClient(user, ws);
-        const bestellungen = await findBestellungenByUser(user);
-        ws.send(JSON.stringify(bestellungen));
-    });
-};
-
 async function sendBestellungUpdateToClients(user) {
-    const adminUsers = await getAdminUUIDs();
-    const notifyUsers = [...adminUsers, user];
-    for (const session of bestellungSession) {
-        for (const notifyUser of notifyUsers) {
-            if (notifyUser.uuid === session.user.uuid) {
-                const bestellungen = await findBestellungenByUser(session.user);
-                session.ws.send(JSON.stringify(bestellungen));
-            }
-        }
-    }
+    const adminUUIDs = await getAdminUUIDs();
+    const notifyUsers = [...adminUUIDs, user];
+    await wm.sendUpdateToClients(notifyUsers)
 }
 
 bestellungRouter.post(

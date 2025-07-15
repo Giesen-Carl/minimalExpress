@@ -4,19 +4,19 @@ import http from 'http';
 import auth_router, { authUser, authws } from './auth_router.js';
 import cocktailRouter from './cocktailRouter.js';
 import bestellungRouter from './bestellungRouter.js';
-import { mountBestellungRouter } from './bestellungRouter.js';
 import expressWs from 'express-ws';
 import { init } from './database/db_client.js';
 import { getAllCocktailsWithIngredients, getAllIngredients } from './database/queries.js';
 import setupDB from './database/schema.js';
 import ingredientRouter from './ingredientRouter.js';
+import WebsocketManager from './websockerManager.js';
 
 const CLEAN_DATABASE = false;
 
 const app = express();
 const httpServer = http.createServer(app);
 expressWs(app, httpServer);
-mountBestellungRouter();
+WebsocketManager.mount();
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));

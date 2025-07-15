@@ -20,7 +20,11 @@ ingredientRouter.get('/ingredient', auth, validateRole(Role.ADMIN), async (req, 
             availability: ingredient.available
         }))
     };
-    res.render('ingredient.ejs', data);
+    const config = {
+        username: req.user.username,
+        role: req.user.role,
+    };
+    res.render('ingredient.ejs', { ...data, config });
 })
 
 ingredientRouter.post('/ingredient/create', auth, validateRole(Role.ADMIN), async (req, res) => {

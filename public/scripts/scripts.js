@@ -89,6 +89,9 @@ setButtonEvent('cocktails-button', () => {
 setButtonEvent('bestellung-button', () => {
     redirect('/bestellung');
 });
+setButtonEvent('ingredient-button', () => {
+    redirect('/ingredient');
+});
 
 function setButtonEvent(buttonClassName, btnFnc) {
     const button = document.querySelector(`.${buttonClassName}`);

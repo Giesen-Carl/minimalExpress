@@ -11,44 +11,38 @@
                     <div>Cocktails</div>
                 </button>
                 <% } %>
-                    <!-- Cocktial erstellen button -->
-                    <% if (headerButtons.includes('cocktail-create-button') && locals.config.role==='ADMIN' ) { %>
-                        <button class="header-button cocktail-create-button">
-                            <div>Cocktail erstellen</div>
+                    <!-- Ingredient button -->
+                    <% if (headerButtons.includes('ingredient-button') && locals.config.role==='ADMIN' ) { %>
+                        <button class="header-button ingredient-button">
+                            <div>Ingredient</div>
                         </button>
                         <% } %>
-                            <!-- Bestellungen button -->
-                            <% if (headerButtons.includes('bestellung-button')) { %>
-                                <button class="header-button bestellung-button">
-                                    <div>Bestellungen</div>
+                            <!-- Cocktial erstellen button -->
+                            <% if (headerButtons.includes('cocktail-create-button') && locals.config.role==='ADMIN' ) {
+                                %>
+                                <button class="header-button cocktail-create-button">
+                                    <div>Cocktail erstellen</div>
                                 </button>
                                 <% } %>
-                                    <!-- New Game button -->
-                                    <% if (headerButtons.includes('new-game-button')) { %>
-                                        <button class="header-button new-game-button">
-                                            <div>New Game</div>
+                                    <!-- Bestellungen button -->
+                                    <% if (headerButtons.includes('bestellung-button')) { %>
+                                        <button class="header-button bestellung-button">
+                                            <div>Bestellungen</div>
                                         </button>
                                         <% } %>
-
-                                            <!-- Lobby button -->
-                                            <% if (headerButtons.includes('lobby-button')) { %>
-                                                <button class="header-button lobby-button">
-                                                    <div>Lobby</div>
+                                            <!-- Header buttons end -->
+                                            <!-- Login and Logout buttons -->
+                                            <button class="header-button logout-button" redirect="/">
+                                                <div class="username-text">
+                                                    <%= locals.config.username %>
+                                                </div>
+                                                <div class="logout-text">logout</div>
+                                            </button>
+                                            <% } else { %>
+                                                <button class="header-button login-button" redirect="/">
+                                                    <div>login</div>
                                                 </button>
                                                 <% } %>
-                                                    <!-- Header buttons end -->
-                                                    <!-- Login and Logout buttons -->
-                                                    <button class="header-button logout-button" redirect="/">
-                                                        <div class="username-text">
-                                                            <%= locals.config.username %>
-                                                        </div>
-                                                        <div class="logout-text">logout</div>
-                                                    </button>
-                                                    <% } else { %>
-                                                        <button class="header-button login-button" redirect="/">
-                                                            <div>login</div>
-                                                        </button>
-                                                        <% } %>
-                                                            <!-- Login and Logout butons end -->
+                                                    <!-- Login and Logout butons end -->
     </div>
 </div>

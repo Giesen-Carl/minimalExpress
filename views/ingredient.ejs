@@ -45,86 +45,80 @@
 </head>
 
 <body>
+    <div class="wrapper">
+        <%- include('partials/header.ejs', { headerTitle: 'Ingredient' , headerButtons: ['cocktails-button'] } ) %>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Available</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ingredient-table-body">
+                        <% ingredients.forEach(ingredient=> { %>
+                            <tr data-name="<%= ingredient.name %>">
+                                <td>
+                                    <%= ingredient.name %>
+                                </td>
+                                <td class="availability">
+                                    <%= ingredient.availability ? "✅" : "❌" %>
+                                </td>
+                                <td>
+                                    <button onclick="toggleAvailability('<%= ingredient.name %>')">Toggle</button>
+                                    <button onclick="deleteIngredient('<%= ingredient.name %>')">Delete</button>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
 
-    <h1>Manage Ingredients</h1>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Available</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="ingredient-table-body">
-            <% ingredients.forEach(ingredient=> { %>
-                <tr data-name="<%= ingredient.name %>">
-                    <td>
-                        <%= ingredient.name %>
-                    </td>
-                    <td class="availability">
-                        <%= ingredient.availability ? "✅" : "❌" %>
-                    </td>
-                    <td>
-                        <button onclick="toggleAvailability('<%= ingredient.name %>')">Toggle</button>
-                        <button onclick="deleteIngredient('<%= ingredient.name %>')">Delete</button>
-                    </td>
-                </tr>
-                <% }) %>
-        </tbody>
-    </table>
-
-    <div class="add-ingredient">
-        <input type="text" id="new-ingredient-name" placeholder="New ingredient name" />
-        <button onclick="addIngredient()">➕</button>
-    </div>
-
+                <div class="add-ingredient">
+                    <input type="text" id="new-ingredient-name" placeholder="New ingredient name" />
+                    <button onclick="addIngredient()">➕</button>
+                </div>
+            </div>
+    </div> <!-- End Wrapper -->
+    <script src="scripts/scripts.js"></script>
     <script>
-        async function toggleAvailability(name) {
+        function toggleAvailability(name) {
             const row = document.querySelector(`tr[data-name="${name}"]`);
             const currentStatus = row.querySelector(".availability").textContent.includes("✅");
             const newAvailability = !currentStatus;
-
-            const res = await fetch('/ingredient/availability', {
+            fetch('/ingredient/availability', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ingredient_name: name, availability: newAvailability })
-            });
-
-            if (res.ok) {
-                row.querySelector(".availability").textContent = newAvailability ? "✅" : "❌";
-            }
+            })
+            row.querySelector(".availability").textContent = newAvailability ? "✅" : "❌";
         }
 
-        async function deleteIngredient(name) {
-            const res = await fetch('/ingredient/delete', {
+        function deleteIngredient(name) {
+            fetch('/ingredient/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ingredient_name: name })
             });
-
-            if (res.ok) {
-                const row = document.querySelector(`tr[data-name="${name}"]`);
-                row.remove();
-            }
+            const row = document.querySelector(`tr[data-name="${name}"]`);
+            row.remove();
         }
 
-        async function addIngredient() {
+        function addIngredient() {
             const input = document.getElementById('new-ingredient-name');
             const name = input.value.trim();
             if (!name) return;
 
-            const res = await fetch('/ingredient/create', {
+            fetch('/ingredient/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ingredient_name: name })
             });
 
-            if (res.ok) {
-                const tbody = document.getElementById('ingredient-table-body');
-                const newRow = document.createElement('tr');
-                newRow.setAttribute('data-name', name);
-                newRow.innerHTML = `
+            const tbody = document.getElementById('ingredient-table-body');
+            const newRow = document.createElement('tr');
+            newRow.setAttribute('data-name', name);
+            newRow.innerHTML = `
           <td>${name}</td>
           <td class="availability">✅</td>
           <td>
@@ -132,9 +126,8 @@
             <button onclick="deleteIngredient('${name}')">Delete</button>
           </td>
         `;
-                tbody.appendChild(newRow);
-                input.value = '';
-            }
+            tbody.appendChild(newRow);
+            input.value = '';
         }
     </script>
 

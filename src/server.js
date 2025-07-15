@@ -50,8 +50,6 @@ const start = async () => {
         await setupDB();
     }
     httpServer.listen(3000, () => console.log(`Server is running at http://localhost:${3000}`));
-    // const b = (await getAllIngredients()).map(ing => ing.ingredient_name);
-    // console.log(b)
 };
 
 start();

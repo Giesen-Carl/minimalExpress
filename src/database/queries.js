@@ -245,3 +245,15 @@ export async function deleteBestellungByBestellungId(bestellung_id) {
     const queryName = 'Delete Bestellung by ID';
     return await runQuery(query, queryName);
 }
+
+export async function deleteCocktailById(cocktail_id) {
+    const query = `DELETE FROM cocktail WHERE id = '${cocktail_id}'`;
+    const queryName = 'Delete Cocktail by ID';
+    return await runQuery(query, queryName);
+}
+
+export async function deleteCocktailIngredientByCocktailId(cocktail_id) {
+    const query = `DELETE FROM cocktail_ingredient WHERE cocktail_id = '${cocktail_id}'`;
+    const queryName = 'Delete Cocktail Ingredient by Cocktail ID';
+    return await runQuery(query, queryName);
+}

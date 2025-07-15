@@ -1,10 +1,9 @@
 import express from 'express';
 import { auth, Role, validateRole } from './auth_router.js';
-import Cocktail from './database/model/cocktailModel.js';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { redirect } from './auth_router.js';
-import { createObject, getAllIngredients, getCocktailByName } from './database/queries.js';
+import { createObject, deleteCocktailById, deleteCocktailIngredientByCocktailId, getAllIngredients, getCocktailByName } from './database/queries.js';
 
 const cocktailRouter = express.Router();
 cocktailRouter.use(cookieParser());
@@ -81,8 +80,12 @@ cocktailRouter.route('/cocktails')
 cocktailRouter.post('/cocktails/delete/:cocktail_name', async (req, res) => {
     const paramName = req.params.cocktail_name;
     try {
-        const cocktail = await Cocktail.findOne({ where: { cocktail_name: paramName } })
-        await cocktail.destroy();
+        const cocktail_id = (await getCocktailByName(paramName)).id;
+        if (!cocktail_id) {
+            throw new Error('Cocktail not found');
+        }
+        await deleteCocktailById(cocktail_id);
+        await deleteCocktailIngredientByCocktailId(cocktail_id);
     } catch (e) {
         console.log(e);
     }

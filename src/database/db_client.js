@@ -1,13 +1,24 @@
 import pkg from "pg";
 const { Client } = pkg;
 
-const client = new Client({
-    user: "admin",
-    password: process.env.POSTGRES_PASSWORD,
-    database: "express_db",
-    host: "localhost",
-    port: 5432,
-});
+const db_config = {
+    development: {
+        user: "admin",
+        password: process.env.POSTGRES_PASSWORD,
+        database: "express_db",
+        host: "localhost",
+        port: 5432,
+    },
+    production: {
+        user: "admin",
+        password: process.env.POSTGRES_PASSWORD,
+        database: "express_db",
+        host: "postgres_container",
+        port: 5432,
+    }
+}
+const env = process.env.NODE_ENV || 'development';
+const client = new Client(db_config[env]);
 
 export async function init() {
     await connect();

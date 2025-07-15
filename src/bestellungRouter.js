@@ -72,9 +72,10 @@ function registerBestellungClient(user, ws) {
         ws: ws
     });
     ws.on('close', () => {
-        bestellungSession.splice(bestellungSession.findIndex(session => session.user.uuid === user.uuid), 1);
+        const user = bestellungSession.splice(bestellungSession.findIndex(session => session.user.uuid === user.uuid), 1)[0];
+        console.log(`User '${user.username}' disconnected`)
     });
-    console.log('👤 A user connected to Bestellung. Total:', bestellungSession.length);
+    console.log(`'${user.username}' connected to Bestellung. Total:`, bestellungSession.length);
 }
 function getUserIdFromRequest(req) {
     const token = req.cookies.token;

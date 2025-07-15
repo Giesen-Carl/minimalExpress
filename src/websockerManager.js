@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { redirect } from './auth_router.js';
 import jwt from 'jsonwebtoken';
-import { getAdminUUIDs, getUserByUUID } from './database/queries.js';
+import { getUserByUUID } from './database/queries.js';
 
 class WebsocketManager {
     static mountingList = [];
@@ -30,7 +30,6 @@ class WebsocketManager {
             });
         });
     }
-
     sendUpdateToClients = async (notifyUsers) => {
         for (const session of this.sessions) {
             for (const notifyUser of notifyUsers) {

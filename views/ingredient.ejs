@@ -47,63 +47,61 @@
 <body>
     <div class="wrapper">
         <%- include('partials/header.ejs', { headerTitle: 'Ingredient' , headerButtons: ['cocktails-button'] } ) %>
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Available</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ingredient-table-body">
-                        <% ingredients.forEach(ingredient=> { %>
-                            <tr data-name="<%= ingredient.name %>">
-                                <td>
-                                    <%= ingredient.name %>
-                                </td>
-                                <td class="availability">
-                                    <%= ingredient.availability ? "✅" : "❌" %>
-                                </td>
-                                <td>
-                                    <button onclick="toggleAvailability('<%= ingredient.name %>')">Toggle</button>
-                                    <button onclick="deleteIngredient('<%= ingredient.name %>')">Delete</button>
-                                </td>
-                            </tr>
-                            <% }) %>
-                    </tbody>
-                </table>
-
-                <div class="add-ingredient">
-                    <input type="text" id="new-ingredient-name" placeholder="New ingredient name" />
-                    <button onclick="addIngredient()">➕</button>
-                </div>
-            </div>
+            <table id="ingredient_table"></table>
+            <div id="add_ingredient_form"></div>
     </div> <!-- End Wrapper -->
     <script src="scripts/scripts.js"></script>
     <script>
-        function toggleAvailability(name) {
-            const row = document.querySelector(`tr[data-name="${name}"]`);
-            const currentStatus = row.querySelector(".availability").textContent.includes("✅");
-            const newAvailability = !currentStatus;
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const ws = new WebSocket(`${protocol}://${window.location.host}/ingredient/ws`);
+        ws.addEventListener('message', event => renderData(JSON.parse(event.data)));
+
+        function renderData(data) {
+            const table = document.getElementById('ingredient_table');
+            const add_ingredient_form = document.getElementById('add_ingredient_form');
+            const tableHeader = `
+                    <tr>
+                        <th>Name</th>
+                        <th>Available</th>
+                        <th>Actions</th>
+                    </tr>
+                `;
+            const tableRows = data.reduce((acc, cur) => {
+                const toggleAvailability = `<button type="submit" onClick="setAvailable(${cur.id}, ${!cur.available})">Toggle</button>`;
+                const deleteIngredient = `<button type="submit" onClick="deleteIngredient(${cur.id})">Delete</button>`;
+                const actions = `${toggleAvailability}${deleteIngredient}`;
+                return acc + `
+                        <tr>
+                            <td>${cur.ingredient_name}</th>
+                            <td>${cur.available ? '✅' : '❌'}</th>
+                            <td>${actions}</th>
+                        </tr>
+                    `;
+            }, '')
+            const addIngredient = `
+                    <div class="add-ingredient">
+                        <input type="text" id="new-ingredient-name" placeholder="New ingredient name" />
+                        <button onclick="addIngredient()">➕</button>
+                    </div>
+                `;
+            table.innerHTML = `${tableHeader}${tableRows}`;
+            add_ingredient_form.innerHTML = `${addIngredient}`
+        }
+
+        function setAvailable(id, available) {
             fetch('/ingredient/availability', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ingredient_name: name, availability: newAvailability })
+                body: JSON.stringify({ ingredient_id: id, availability: available })
             })
-            row.querySelector(".availability").textContent = newAvailability ? "✅" : "❌";
         }
-
-        function deleteIngredient(name) {
+        function deleteIngredient(id) {
             fetch('/ingredient/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ingredient_name: name })
+                body: JSON.stringify({ ingredient_id: id })
             });
-            const row = document.querySelector(`tr[data-name="${name}"]`);
-            row.remove();
         }
-
         function addIngredient() {
             const input = document.getElementById('new-ingredient-name');
             const name = input.value.trim();
@@ -114,23 +112,8 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ingredient_name: name })
             });
-
-            const tbody = document.getElementById('ingredient-table-body');
-            const newRow = document.createElement('tr');
-            newRow.setAttribute('data-name', name);
-            newRow.innerHTML = `
-          <td>${name}</td>
-          <td class="availability">✅</td>
-          <td>
-            <button onclick="toggleAvailability('${name}')">Toggle</button>
-            <button onclick="deleteIngredient('${name}')">Delete</button>
-          </td>
-        `;
-            tbody.appendChild(newRow);
-            input.value = '';
         }
     </script>
-
 </body>
 
 </html>

@@ -47,7 +47,7 @@ async function findBestellungenByUser(user) {
         })
             .sort((a, b) => getTimeFromTimestamp(a.timestamp) - getTimeFromTimestamp(b.timestamp));
     }
-    return bestellungen;
+    return bestellungen || [];
 }
 
 async function sendBestellungUpdateToClients(user) {

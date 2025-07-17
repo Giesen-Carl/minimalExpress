@@ -99,6 +99,15 @@ button:hover {
     background-color: rgba(255, 0, 0, 0.8);
 }
 
+@media (hover: none) and (pointer: coarse) {
+    .cocktail-action-button {
+        padding: 0px 30px;
+        opacity: 1;
+        font-size: 30px;
+        background-color: rgba(var(--wesbos), 0.2);
+    }
+}
+
 .buttons-container {
     display: flex;
     justify-content: center;
@@ -150,18 +159,17 @@ body {
     color: #fff;
 }
 
-@media screen and (max-width: 500px) {
-    body {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("img/background_mobile.jpg");
-    }
-}
-
 .wrapper {
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
 }
 
+@media screen and (max-width: 500px) {
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("img/background_mobile.jpg");
+    }
+}
 
 table {
     width: 100%;

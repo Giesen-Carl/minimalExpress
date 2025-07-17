@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Fermantor - Die besten Cocktails in Düren</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -12,7 +13,7 @@
     <div class="wrapper">
         <%- include('partials/header.ejs', { headerTitle: 'Tristans mega leckere Cocktails' , headerButtons:
             ['cocktail-create-button', 'bestellung-button' , 'ingredient-button' ] }) %>
-            <div id="root"></div>
+            <div id="root" class="wrapper"></div>
     </div>
     <script>
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';

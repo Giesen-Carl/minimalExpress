@@ -2,10 +2,12 @@ import express from 'express';
 import { auth, Role, validateRole } from './auth_router.js';
 import { createObject, deleteIngredientById, getAdminUUIDs, getAllIngredients, setIngredientAvailability } from './database/queries.js';
 import WebsocketManager from './websockerManager.js';
+import { sendCocktailPageUpdate } from './cocktailRouter.js';
 
 const ingredientRouter = express.Router();
 const dataSend = async () => {
     const ingredients = await getAllIngredients();
+    ingredients.sort((a, b) => a.ingredient_name.localeCompare(b.ingredient_name));
     return JSON.stringify(ingredients);
 }
 const wm = new WebsocketManager(ingredientRouter, '/ingredient', dataSend);
@@ -33,6 +35,7 @@ ingredientRouter.post('/ingredient/create', auth, validateRole(Role.ADMIN), asyn
 ingredientRouter.post('/ingredient/availability', auth, validateRole(Role.ADMIN), async (req, res) => {
     await setIngredientAvailability(req.body.ingredient_id, req.body.availability);
     await sendUpdate();
+    await sendCocktailPageUpdate();
 });
 ingredientRouter.post('/ingredient/delete', auth, validateRole(Role.ADMIN), async (req, res) => {
     await deleteIngredientById(req.body.ingredient_id);

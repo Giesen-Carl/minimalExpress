@@ -15,7 +15,7 @@ const dataSend = async () => {
     })
     return JSON.stringify(data);
 }
-const wm = new WebsocketManager(cocktailRouter, '/cocktails', dataSend);
+const cocktail_wm = new WebsocketManager(cocktailRouter, '/cocktails', dataSend);
 
 cocktailRouter.get('/', authUser, async (req, res) => {
     const config = {
@@ -25,8 +25,8 @@ cocktailRouter.get('/', authUser, async (req, res) => {
     res.render('cocktails', { config: config });
 });
 
-async function sendUpdate() {
-    await wm.sendUpdateToClients('all');
+export async function sendCocktailPageUpdate() {
+    await cocktail_wm.sendUpdateToClients('all');
 }
 
 cocktailRouter.route('/cocktails')
@@ -73,6 +73,7 @@ cocktailRouter.route('/cocktails')
                     menge: ingredient.menge,
                 });
             }
+            await sendCocktailPageUpdate();
             res.redirect('/');
         } catch (error) {
             const selectedIngredients = JSON.parse(body.ingredients || '[]').map(ing => ing.ingredient);
@@ -100,7 +101,7 @@ cocktailRouter.delete('/cocktails/:cocktail_id', auth, validateRole(Role.ADMIN),
     try {
         await deleteCocktailById(cocktail_id);
         await deleteCocktailIngredientByCocktailId(cocktail_id);
-        sendUpdate();
+        await sendCocktailPageUpdate();
     } catch (e) {
         console.log(e);
     }

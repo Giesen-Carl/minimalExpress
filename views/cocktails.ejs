@@ -51,6 +51,9 @@
                         const ingredients = cocktail.ingredients.map(ing => {
                             return `<i>${ing.menge} ${ing.name}<br></i>`;
                         }).join('');
+                        const cocktail_action_button = page_state.role === 'USER' || page_state.role === 'ADMIN' ? `
+                            <button class="cocktail-action-button ${page_state.delete_mode ? 'delete-button' : 'order-button'}" onClick="${page_state.delete_mode ? `deleteCocktail('${cocktail.id}')` : `orderCocktail('${cocktail.cocktail_name}')`}">${page_state.delete_mode ? '-' : '+'}</button>
+                        ` : '';
                         return `
                             <div class="item" data-cocktail-name="${cocktail.cocktail_name}">
                                 <div class="item__header">
@@ -60,7 +63,7 @@
                                 </div>
                                 <div class="item__description">
                                     <p class="item__ingredients">${ingredients}</p>
-                                    <button class="cocktail-action-button ${page_state.delete_mode ? 'delete-button' : 'order-button'}" onClick="${page_state.delete_mode ? `deleteCocktail('${cocktail.id}')` : `orderCocktail('${cocktail.cocktail_name}')`}">${page_state.delete_mode ? '-' : '+'}</button>
+                                    ${cocktail_action_button}
                                 </div>
                             </div>
                     `}).join('');

@@ -33,11 +33,13 @@
                             </tr>
                         `;
                 const tableRows = data.reduce((acc, cur) => {
+                    const status = cur.status === 'IN_PROGRESS' ? '<div class="in-progress">wird bearbeitet</div>' : '<div class="finished">fertig</div>';
+                    const status_container = `<div class="status-container">${status}</div>`;
                     const row = `
                             <tr>
                                 <td>${cur.time}</td>
                                 <td>${cur.cocktail_name}</td>
-                                <td>${cur.status}</td>
+                                <td>${status_container}</td>
                             </tr>
                         `;
                     return acc + row;
@@ -61,12 +63,14 @@
                                 <button type="submit" onClick="sendPost('/bestellung/delete/${cur.id}')">delete</button>
                             `;
                     const actions = cur.status === 'IN_PROGRESS' ? completeAction : deleteAction;
+                    const status = cur.status === 'IN_PROGRESS' ? '<div class="in-progress">wird bearbeitet</div>' : '<div class="finished">fertig</div>';
+                    const status_container = `<div class="status-container">${status}</div>`;
                     const row = `
                                 <tr>
                                     <td>${cur.time}</td>
                                     <td>${cur.username}</td>
                                     <td>${cur.cocktail_name}</td>
-                                    <td>${cur.status}</td>
+                                    <td>${status_container}</td>
                                     <td>${actions}</td>
                                 </tr>
                             `;

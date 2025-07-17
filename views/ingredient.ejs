@@ -53,7 +53,6 @@
     <script>
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const ws = new WebSocket(`${protocol}://${window.location.host}/ingredient/ws`);
-        console.log('TEST', ws)
         ws.addEventListener('message', event => renderData(JSON.parse(event.data)));
 
         function renderData(data) {

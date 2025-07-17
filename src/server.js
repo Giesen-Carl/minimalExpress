@@ -43,7 +43,7 @@ app.use(ingredientRouter);
 //     res.render('cocktails', { data: data, config: config })
 // });
 
-httpServer.on('upgrade', authws);
+// httpServer.on('upgrade', authws);
 
 const start = async () => {
     await init();

@@ -24,13 +24,12 @@
         const page_state = {
             data: undefined,
             current_category: null,
-            username: '<%= locals.config.username %>',
-            role: '<%= locals.config.role %>',
+            username: config.username,
+            role: config.role,
             delete_mode: false,
         };
 
         function renderData() {
-            // console.log('Page state', page_state);
             const data = page_state.data;
             if (page_state.current_category === null && data.length > 0) {
                 page_state.current_category = data[0].category_name;

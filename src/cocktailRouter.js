@@ -1,5 +1,5 @@
 import express from 'express';
-import { auth, authUser, Role, validateRole } from './auth_router.js';
+import { authUser, auth, Role, validateRole } from './auth_router.js';
 import { createObject, deleteCocktailById, deleteCocktailIngredientByCocktailId, getAllCocktailsWithIngredients, getAllIngredients, getCocktailByName } from './database/queries.js';
 import WebsocketManager from './websockerManager.js';
 
@@ -26,14 +26,7 @@ cocktailRouter.get('/', authUser, async (req, res) => {
 });
 
 async function sendUpdate() {
-    // const cocktails = await getAllCocktailsWithIngredients();
-    // const categories = [...new Set(cocktails.map(elem => elem.category))];
-    // const data = categories.map(categoryName => {
-    //     return {
-    //         name: categoryName,
-    //         items: cocktails.filter(elem => elem.category === categoryName && elem.available === true)
-    //     }
-    // })
+    await wm.sendUpdateToClients('all');
 }
 
 cocktailRouter.route('/cocktails')
@@ -107,6 +100,7 @@ cocktailRouter.delete('/cocktails/:cocktail_id', auth, validateRole(Role.ADMIN),
     try {
         await deleteCocktailById(cocktail_id);
         await deleteCocktailIngredientByCocktailId(cocktail_id);
+        sendUpdate();
     } catch (e) {
         console.log(e);
     }

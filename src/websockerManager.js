@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import { redirect } from './auth_router.js';
 import jwt from 'jsonwebtoken';
 import { getUserByUUID } from './database/queries.js';
+import crypto from 'crypto';
 
 class WebsocketManager {
     static mountingList = [];
@@ -17,24 +18,27 @@ class WebsocketManager {
         this.dataSend = dataSend;
         WebsocketManager.mountingList.push(() => {
             router.ws(`${subpath}/ws`, async (ws, req) => {
-                const token = req.cookies.token;
+                let user = undefined;
                 try {
+                    const token = req.cookies.token;
                     const uuid = token ? jwt.verify(token, process.env.PASSWORD_HASH_SECRET).id : null;
-                    const user = await getUserByUUID(uuid);
-                    this.sessions.push({ user: user, ws: ws });
-                    if (!user) {
-                        throw new Error('User not found');
+                    if (!uuid) {
+                        throw new Error('No valid token provided');
                     }
-                    ws.on('close', () => this.sessions.splice(this.sessions.findIndex(session => session.user.uuid === user.uuid), 1)[0].user);
-                    ws.send(await this.dataSend(user));
+                    user = await getUserByUUID(uuid);
                 } catch (error) {
-                    ws.close();
-                    return;
+                    user = { username: 'Guest', role: 'GUEST', uuid: crypto.randomUUID() };
                 }
+                this.sessions.push({ user: user, ws: ws });
+                ws.on('close', () => this.sessions.splice(this.sessions.findIndex(session => session.user.uuid === user.uuid), 1)[0].user);
+                ws.send(await this.dataSend(user));
             });
         });
     }
     sendUpdateToClients = async (notifyUsers) => {
+        if (notifyUsers === 'all') {
+            notifyUsers = this.sessions.map(session => session.user);
+        }
         for (const session of this.sessions) {
             for (const notifyUser of notifyUsers) {
                 if (notifyUser.uuid === session.user.uuid) {

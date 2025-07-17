@@ -44,7 +44,7 @@ cocktailRouter.route('/cocktails')
         }
         res.render('createCocktail.ejs', data);
     })
-    .post(auth, validateRole('ADMIN'), async (req, res) => {
+    .post(auth, validateRole(Role.ADMIN), async (req, res) => {
         const body = req.body;
         try {
             const cocktail = await getCocktailByName(body.cocktail_name);
@@ -102,19 +102,14 @@ cocktailRouter.route('/cocktails')
         }
     });
 
-cocktailRouter.post('/cocktails/delete/:cocktail_name', async (req, res) => {
-    const paramName = req.params.cocktail_name;
+cocktailRouter.delete('/cocktails/:cocktail_id', auth, validateRole(Role.ADMIN), async (req, res) => {
+    const cocktail_id = req.params.cocktail_id;
     try {
-        const cocktail_id = (await getCocktailByName(paramName)).id;
-        if (!cocktail_id) {
-            throw new Error('Cocktail not found');
-        }
         await deleteCocktailById(cocktail_id);
         await deleteCocktailIngredientByCocktailId(cocktail_id);
     } catch (e) {
         console.log(e);
     }
-    res.redirect('/')
 });
 
 export default cocktailRouter;

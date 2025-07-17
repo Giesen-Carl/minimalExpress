@@ -20,12 +20,98 @@
     <script>
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const ws = new WebSocket(`${protocol}://${window.location.host}/cocktails/ws`);
-        ws.addEventListener('message', event => renderData(JSON.parse(event.data)));
+        ws.addEventListener('message', event => {
+            page_state.data = JSON.parse(event.data);
+            renderData();
+        });
+        const page_state = {
+            data: undefined,
+            current_category: null,
+            username: '<%= locals.config.username %>',
+            role: '<%= locals.config.role %>',
+            delete_mode: false,
+        };
 
-        function renderData(data) {
+        function renderData() {
+            console.log('Page state', page_state);
+            const data = page_state.data;
+            if (page_state.current_category === null && data.length > 0) {
+                page_state.current_category = data[0].category_name;
+            }
             const root = document.getElementById('root');
-            console.log(data);
-            root.innerHTML = 'Cocktails Yeah';
+            const categories = data.map(item => item.category_name);
+            const category_buttons = categories.map(category => {
+                const isActive = page_state.current_category === category ? ' button--is-active' : '';
+                return `<button class="category-button${isActive}" onClick="activateCategory('${category}')" value="${category}">${category}</button>`;
+            }).join('');
+            const category_buttons_container = `
+                <div class="buttons-container">
+                    ${category_buttons}
+                </div>
+            `;
+            const cocktail_items = data.map(item => {
+                if (item.category_name === page_state.current_category) {
+                    return item.category_cocktails.map(cocktail => {
+                        const ingredients = cocktail.ingredients.map(ing => {
+                            return `<i>${ing.menge} ${ing.name}<br></i>`;
+                        }).join('');
+                        return `
+                            <div class="item" data-cocktail-name="${cocktail.cocktail_name}">
+                                <div class="item__header">
+                                    <h3 class="item__title">${cocktail.cocktail_name}</h3>
+                                    <span class="item__dots"></span>
+                                    <span class="item__price">${cocktail.price}&euro;</span>
+                                </div>
+                                <div class="item__description">
+                                    <p class="item__ingredients">${ingredients}</p>
+                                    <button class="cocktail-action-button ${page_state.delete_mode ? 'delete-button' : 'order-button'}" onClick="${page_state.delete_mode ? `deleteCocktail('${cocktail.id}')` : `orderCocktail('${cocktail.cocktail_name}')`}">${page_state.delete_mode ? '-' : '+'}</button>
+                                </div>
+                            </div>
+                    `}).join('');
+                }
+            }).join('');
+            const cocktail_items_container = `<div class="menu">${cocktail_items}</div>`;
+            root.innerHTML = `${category_buttons_container}${cocktail_items_container}`;
+        }
+
+        function activateCategory(category) {
+            const buttons = document.querySelectorAll('.category-button');
+            buttons.forEach(button => {
+                if (button.value === category) {
+                    page_state.current_category = category;
+                }
+            });
+            renderData();
+        }
+
+        function orderCocktail(cocktail_name) {
+            fetch(`/bestellung/${cocktail_name}`, { method: 'POST' });
+            const source = document.querySelector(`.item[data-cocktail-name="${cocktail_name}"]`);
+            const target = document.querySelector('.bestellung-button');
+            fly_animation(source, target);
+        }
+
+        function deleteCocktail(cocktail_id) {
+            fetch(`/cocktails/${cocktail_id}`, {
+                method: 'DELETE',
+            });
+        }
+
+        function fly_animation(source, target) {
+            const rect1 = source.getBoundingClientRect();
+            const rect2 = target.getBoundingClientRect();
+            const clone = source.cloneNode(true);
+            clone.classList.add("fly-clone");
+            clone.style.left = rect1.left + "px";
+            clone.style.top = rect1.top + "px";
+            clone.style.width = rect1.width + "px";
+            clone.style.height = rect1.height + "px";
+            const dx = (rect2.left + rect2.width / 2) - (rect1.left + rect1.width / 2);
+            const dy = (rect2.top + rect2.height / 2) - (rect1.top + rect1.height / 2);
+            clone.style.setProperty('--dx', `${dx}px`);
+            clone.style.setProperty('--dy', `${dy}px`);
+            document.body.appendChild(clone);
+            clone.addEventListener('animationend', () => clone.remove());
         }
     </script>
 </body>

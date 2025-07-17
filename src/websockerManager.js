@@ -18,15 +18,19 @@ class WebsocketManager {
         WebsocketManager.mountingList.push(() => {
             router.ws(`${subpath}/ws`, async (ws, req) => {
                 const token = req.cookies.token;
-                const uuid = token ? jwt.verify(token, process.env.PASSWORD_HASH_SECRET).id : null;
-                const user = await getUserByUUID(uuid);
-                if (!user) {
+                try {
+                    const uuid = token ? jwt.verify(token, process.env.PASSWORD_HASH_SECRET).id : null;
+                    const user = await getUserByUUID(uuid);
+                    this.sessions.push({ user: user, ws: ws });
+                    if (!user) {
+                        throw new Error('User not found');
+                    }
+                    ws.on('close', () => this.sessions.splice(this.sessions.findIndex(session => session.user.uuid === user.uuid), 1)[0].user);
+                    ws.send(await this.dataSend(user));
+                } catch (error) {
                     ws.close();
                     return;
                 }
-                this.sessions.push({ user: user, ws: ws });
-                ws.on('close', () => this.sessions.splice(this.sessions.findIndex(session => session.user.uuid === user.uuid), 1)[0].user);
-                ws.send(await this.dataSend(user));
             });
         });
     }

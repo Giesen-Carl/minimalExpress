@@ -1,15 +1,12 @@
 :root {
-    --wesbos: #ffc600;
+    --wesbos: 255, 198, 0;
     scrollbar-width: none;
 }
 
 .menu {
-    display: none;
-}
-
-.menu--is-visible {
     display: grid;
 }
+
 
 .visibility-button {
     display: none;
@@ -33,7 +30,7 @@
 
 .item__title {
     font: 35px cookie, cursive;
-    color: var(--wesbos);
+    color: rgb(var(--wesbos));
     letter-spacing: 2px;
     margin: 0;
 }
@@ -45,12 +42,53 @@
 }
 
 .item__price {
-    color: var(--wesbos);
+    color: rgb(var(--wesbos));
     font: 31px cookie, cursive;
 }
 
 .item__description {
+    display: flex;
+    justify-content: space-between;
     margin-bottom: 40px;
+}
+
+.item__description:hover>.cocktail-action-button {
+    padding: 0px 30px;
+    opacity: 1;
+    font-size: 30px;
+    transition: 0.2s;
+}
+
+.cocktail-action-button {
+    padding: 0px 5px;
+    border: 1px solid rgb(var(--wesbos));
+    border-radius: 3px;
+    color: #fff;
+    font-weight: bold;
+    opacity: 0;
+    transition: 0.2s;
+    font-size: 0px;
+}
+
+.cocktail-action-button:active {
+    transform: scale(0.95);
+    transition: 1s;
+}
+
+.cocktail-action-button.order-button {
+    background-color: rgba(var(--wesbos), 0.2);
+}
+
+.cocktail-action-button.delete-button {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.cocktail-action-button.order-button:hover {
+    background-color: rgba(var(--wesbos), 0.8);
+}
+
+.cocktail-action-button.delete-button:hover {
+    background-color: rgba(255, 0, 0, 0.8);
 }
 
 .buttons-container {
@@ -66,16 +104,25 @@
     }
 }
 
-.button {
+.category-button {
     margin: 5px 15px;
     padding: 10px 20px;
-    border: 1px solid var(--wesbos);
+    border: 1px solid rgb(var(--wesbos));
     border-radius: 3px;
     color: #fff;
     font-weight: bold;
     text-decoration: none;
     letter-spacing: 1px;
     text-transform: uppercase;
+    background-color: rgba(var(--wesbos), 0);
+}
+
+.category-button:hover {
+    background-color: rgba(var(--wesbos), 0.1);
+}
+
+.category-button.button--is-active {
+    background-color: rgba(var(--wesbos), 1);
 }
 
 .highlight {
@@ -83,7 +130,7 @@
     top: 0;
     left: 0;
     display: block;
-    background: var(--wesbos);
+    background: rgb(var(--wesbos));
     border-radius: 3px;
     z-index: -1;
     transition: 0.24s;
@@ -145,7 +192,7 @@ td {
 
 .header-title {
     display: inline-block;
-    border-bottom: 4px solid var(--wesbos);
+    border-bottom: 4px solid rgb(var(--wesbos));
     margin: 0;
     font-family: cookie, cursive;
     font-size: clamp(34px, 10vw, 50px);
@@ -206,5 +253,34 @@ td {
 
     50% {
         transform: scale(1.2);
+    }
+}
+
+.fly-clone {
+    position: fixed;
+    margin: 0;
+    z-index: 1000;
+    pointer-events: none;
+    animation: flyToTarget 1s ease forwards;
+    transform-origin: center center;
+}
+
+@keyframes flyToTarget {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    20% {
+        transform: scale(1.4);
+    }
+
+    40% {
+        transform: scale(0.3);
+    }
+
+    100% {
+        transform: translate(var(--dx), var(--dy)) scale(0.3);
+        opacity: 0.8;
     }
 }

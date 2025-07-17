@@ -4,10 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Fermantor - Die besten Cocktails in Düren</title>
-    <!-- <meta name="viewport" content="width=device-width,initial-scale=1"> -->
     <link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> -->
 </head>
 
 <body>
@@ -16,7 +14,7 @@
             ['cocktail-create-button', 'bestellung-button' , 'ingredient-button' ] }) %>
             <div id="root"></div>
     </div>
-    <script src="scripts/scripts.js"></script>
+    <!-- <script src="scripts/scripts.js"></script> -->
     <script>
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const ws = new WebSocket(`${protocol}://${window.location.host}/cocktails/ws`);
@@ -33,7 +31,7 @@
         };
 
         function renderData() {
-            console.log('Page state', page_state);
+            // console.log('Page state', page_state);
             const data = page_state.data;
             if (page_state.current_category === null && data.length > 0) {
                 page_state.current_category = data[0].category_name;

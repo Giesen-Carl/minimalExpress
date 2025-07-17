@@ -3,46 +3,42 @@
         <%= headerTitle %>
     </div>
     <!-- Header buttons -->
-    <div class="header-buttons">
-        <% if (locals.config.username) { %>
-            <!-- Cocktails button -->
-            <% if (headerButtons.includes('cocktails-button')) { %>
-                <button class="header-button cocktails-button">
-                    <div>Cocktails</div>
-                </button>
-                <% } %>
-                    <!-- Ingredient button -->
-                    <% if (headerButtons.includes('ingredient-button') && locals.config.role==='ADMIN' ) { %>
-                        <button class="header-button ingredient-button">
-                            <div>Ingredient</div>
-                        </button>
-                        <% } %>
-                            <!-- Cocktial erstellen button -->
-                            <% if (headerButtons.includes('cocktail-create-button') && locals.config.role==='ADMIN' ) {
-                                %>
-                                <button class="header-button cocktail-create-button">
-                                    <div>Cocktail erstellen</div>
-                                </button>
-                                <% } %>
-                                    <!-- Bestellungen button -->
-                                    <% if (headerButtons.includes('bestellung-button')) { %>
-                                        <button class="header-button bestellung-button">
-                                            <div>Bestellungen</div>
-                                        </button>
-                                        <% } %>
-                                            <!-- Header buttons end -->
-                                            <!-- Login and Logout buttons -->
-                                            <button class="header-button logout-button" redirect="/">
-                                                <div class="username-text">
-                                                    <%= locals.config.username %>
-                                                </div>
-                                                <div class="logout-text">logout</div>
-                                            </button>
-                                            <% } else { %>
-                                                <button class="header-button login-button" redirect="/">
-                                                    <div>login</div>
-                                                </button>
-                                                <% } %>
-                                                    <!-- Login and Logout butons end -->
-    </div>
+    <div class="header-buttons"></div>
+    <script>
+        const config = JSON.parse('<%- JSON.stringify(locals.config) %>');
+        const headerButtons = JSON.parse('<%- JSON.stringify(headerButtons) %>');
+        const headerButtonsContainer = document.querySelector('.header-buttons');
+
+        const cocktails_button = create_button('cocktails-button', 'Cocktails', '/');
+        const ingredient_button = create_button('ingredient-button', 'Ingredients', '/ingredient');
+        const cocktail_create_button = create_button('cocktail-create-button', 'Create Cocktail', '/cocktails');
+        const bestellung_button = create_button('bestellung-button', 'Bestellung', '/bestellung');
+        const login_button = create_button('login-button', 'Login', '/login');
+        const logout_button_inner_text = `
+            <div class="username-text">${config.username}</div>
+            <div class="logout-text">logout</div>
+        `;
+        const logout_button = create_button('logout-button', logout_button_inner_text, '/logout');
+        if (config.username) {
+            if (headerButtons.includes('cocktails-button')) {
+                headerButtonsContainer.innerHTML += cocktails_button;
+            }
+            if (headerButtons.includes('ingredient-button') && config.role === 'ADMIN') {
+                headerButtonsContainer.innerHTML += ingredient_button;
+            }
+            if (headerButtons.includes('cocktail-create-button') && config.role === 'ADMIN') {
+                headerButtonsContainer.innerHTML += cocktail_create_button;
+            }
+            if (headerButtons.includes('bestellung-button')) {
+                headerButtonsContainer.innerHTML += bestellung_button;
+            }
+            headerButtonsContainer.innerHTML += logout_button;
+        } else {
+            headerButtonsContainer.innerHTML = `${login_button}`;
+        }
+
+        function create_button(name, text, location) {
+            return `<button class="header-button ${name}" onClick="location.href='${location}'">${text}</button>`;
+        }
+    </script>
 </div>

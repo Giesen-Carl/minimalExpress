@@ -1,15 +1,40 @@
 import express from 'express';
-import { auth, Role, validateRole } from './auth_router.js';
-import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
-import { redirect } from './auth_router.js';
-import { createObject, deleteCocktailById, deleteCocktailIngredientByCocktailId, getAllIngredients, getCocktailByName } from './database/queries.js';
+import { auth, authUser, Role, validateRole } from './auth_router.js';
+import { createObject, deleteCocktailById, deleteCocktailIngredientByCocktailId, getAllCocktailsWithIngredients, getAllIngredients, getCocktailByName } from './database/queries.js';
+import WebsocketManager from './websockerManager.js';
 
 const cocktailRouter = express.Router();
-cocktailRouter.use(cookieParser());
-cocktailRouter.use(express.urlencoded({ extended: true }));
-cocktailRouter.use(bodyParser.json());
-cocktailRouter.use(redirect);
+const dataSend = async () => {
+    const cocktails = await getAllCocktailsWithIngredients();
+    const categories = [...new Set(cocktails.map(elem => elem.category))];
+    const data = categories.map(category_name => {
+        return {
+            category_name: category_name,
+            category_cocktails: cocktails.filter(elem => elem.category === category_name && elem.available === true)
+        }
+    })
+    return JSON.stringify(data);
+}
+const wm = new WebsocketManager(cocktailRouter, '/cocktails', dataSend);
+
+cocktailRouter.get('/', authUser, async (req, res) => {
+    const config = {
+        username: req.user?.username,
+        role: req.user?.role,
+    }
+    res.render('cocktails', { config: config });
+});
+
+async function sendUpdate() {
+    // const cocktails = await getAllCocktailsWithIngredients();
+    // const categories = [...new Set(cocktails.map(elem => elem.category))];
+    // const data = categories.map(categoryName => {
+    //     return {
+    //         name: categoryName,
+    //         items: cocktails.filter(elem => elem.category === categoryName && elem.available === true)
+    //     }
+    // })
+}
 
 cocktailRouter.route('/cocktails')
     .get(auth, validateRole(Role.ADMIN), async (req, res) => {

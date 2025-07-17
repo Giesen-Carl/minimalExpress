@@ -11,19 +11,11 @@ const dataSend = async () => {
 const wm = new WebsocketManager(ingredientRouter, '/ingredient', dataSend);
 
 ingredientRouter.get('/ingredient', auth, validateRole(Role.ADMIN), async (req, res) => {
-    const ingredients = (await getAllIngredients());
-    ingredients.sort((a, b) => a.ingredient_name.localeCompare(b.ingredient_name));
-    const data = {
-        ingredients: ingredients.map(ingredient => ({
-            name: ingredient.ingredient_name,
-            availability: ingredient.available
-        })),
-    };
     const config = {
         username: req.user.username,
         role: req.user.role,
     };
-    res.render('ingredient.ejs', { ...data, config });
+    res.render('ingredient.ejs', { config });
 })
 
 async function sendUpdate() {

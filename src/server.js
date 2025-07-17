@@ -25,22 +25,23 @@ app.use(cocktailRouter);
 app.use(bestellungRouter);
 app.use(ingredientRouter);
 
-app.get('/', authUser, async (req, res) => {
-    const cocktails = await getAllCocktailsWithIngredients();
-    const categories = [...new Set(cocktails.map(elem => elem.category))];
-    const data = categories.map(categoryName => {
-        return {
-            name: categoryName,
-            items: cocktails.filter(elem => elem.category === categoryName && elem.available === true)
-        }
-    })
-    const config = {
-        username: req.user?.username,
-        role: req.user?.role,
-        redirect: `?redirect=${req.url}`,
-    }
-    res.render('cocktails', { data: data, config: config })
-});
+// app.get('/', authUser, async (req, res) => {
+//     const cocktails = await getAllCocktailsWithIngredients();
+//     const categories = [...new Set(cocktails.map(elem => elem.category))];
+//     const data = categories.map(categoryName => {
+//         return {
+//             name: categoryName,
+//             items: cocktails.filter(elem => elem.category === categoryName && elem.available === true)
+//         }
+//     })
+//     const config = {
+//         username: req.user?.username,
+//         role: req.user?.role,
+//         redirect: `?redirect=${req.url}`,
+//     }
+//     // res.render('cocktails copy', { data: data, config: config })
+//     res.render('cocktails', { data: data, config: config })
+// });
 
 httpServer.on('upgrade', authws);
 

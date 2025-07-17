@@ -18,24 +18,11 @@ const wm = new WebsocketManager(bestellungRouter, '/bestellung', dataSend);
 const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' })
 
 bestellungRouter.get('/bestellung', auth, async (req, res) => {
-    const bestellungenDB = await getAllBestellungen();
-    const bestellungen = bestellungenDB.map(b => {
-        const timeString = dateFormat.format(new Date(b.timestamp)).replace(',', '');
-        return {
-            timestamp: b.timestamp,
-            time: timeString,
-            username: b.username,
-            cocktail_name: b.cocktail_name,
-            status: b.status,
-            id: b.id
-        }
-    })
-        .sort((a, b) => getTimeFromTimestamp(a.timestamp) - getTimeFromTimestamp(b.timestamp));
     const config = {
         username: req.user.username,
         role: req.user.role,
     };
-    res.render('bestellungen', { bestellungen, config })
+    res.render('bestellungen', { config })
 });
 
 async function findBestellungenByUser(user) {

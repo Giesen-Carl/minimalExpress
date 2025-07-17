@@ -24,15 +24,6 @@ button:hover {
     display: grid;
 }
 
-
-.visibility-button {
-    display: none;
-}
-
-.button--is-visible {
-    display: grid;
-}
-
 @media (min-width: 768px) {
     .menu {
         grid-template-columns: repeat(2, 1fr);
@@ -96,12 +87,12 @@ button:hover {
     background-color: rgba(var(--wesbos), 0.2);
 }
 
-.cocktail-action-button.delete-button {
-    background-color: rgba(255, 0, 0, 0.2);
-}
-
 .cocktail-action-button.order-button:hover {
     background-color: rgba(var(--wesbos), 0.8);
+}
+
+.cocktail-action-button.delete-button {
+    background-color: rgba(255, 0, 0, 0.2);
 }
 
 .cocktail-action-button.delete-button:hover {
@@ -142,17 +133,6 @@ button:hover {
     background-color: rgba(var(--wesbos), 1);
 }
 
-.highlight {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-    background: rgb(var(--wesbos));
-    border-radius: 3px;
-    z-index: -1;
-    transition: 0.24s;
-}
-
 * {
     box-sizing: border-box;
 }
@@ -162,7 +142,6 @@ body {
     min-height: 100vh;
     display: block;
     align-items: start;
-    /* background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("https://i.imgur.com/er8DtBW.jpg"); */
     background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("img/background.jpg");
     background-repeat: repeat;
     background-position: right top;
@@ -181,11 +160,6 @@ body {
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
-}
-
-#login-container {
-    display: flex;
-    justify-content: end;
 }
 
 table {
@@ -224,46 +198,10 @@ td {
 }
 
 .header-button {
-    background: transparent;
-    color: white;
-    display: inline-block;
     padding: 6px;
     height: 49px;
     margin: 0px;
     font-size: 10px;
-}
-
-.order-button-icon {
-    width: 25px;
-    height: 25px;
-    filter: invert(100%);
-    background: transparent;
-    transition: 0.1s;
-}
-
-.order-button-icon:hover {
-    scale: 1.1;
-    transition: 0.1s;
-}
-
-.bouncing {
-    animation: bounce 0.5s ease;
-}
-
-.delete-order-button {
-    cursor: pointer;
-}
-
-@keyframes bounce {
-
-    0%,
-    100% {
-        transform: scale(0.9);
-    }
-
-    50% {
-        transform: scale(1.2);
-    }
 }
 
 .fly-clone {

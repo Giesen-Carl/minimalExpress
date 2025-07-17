@@ -50,7 +50,6 @@
             <table id="ingredient_table"></table>
             <div id="add_ingredient_form"></div>
     </div> <!-- End Wrapper -->
-    <script src="scripts/scripts.js"></script>
     <script>
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const ws = new WebSocket(`${protocol}://${window.location.host}/ingredient/ws`);

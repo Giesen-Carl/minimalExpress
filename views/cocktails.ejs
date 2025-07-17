@@ -14,7 +14,6 @@
             ['cocktail-create-button', 'bestellung-button' , 'ingredient-button' ] }) %>
             <div id="root"></div>
     </div>
-    <!-- <script src="scripts/scripts.js"></script> -->
     <script>
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const ws = new WebSocket(`${protocol}://${window.location.host}/cocktails/ws`);
@@ -69,7 +68,13 @@
                 }
             }).join('');
             const cocktail_items_container = `<div class="menu">${cocktail_items}</div>`;
-            root.innerHTML = `${category_buttons_container}${cocktail_items_container}`;
+            const delete_mode_button = page_state.role === 'ADMIN' ? `<button class="delete-mode-button" onClick="toggleDeleteMode()">${page_state.delete_mode ? 'delete on' : 'delete off'}</button>` : '';
+            const admin_actions_container = page_state.role === 'ADMIN' ? `
+                <div class="admin-actions-container">
+                    ${delete_mode_button}
+                </div>
+            ` : '';
+            root.innerHTML = `${category_buttons_container}${admin_actions_container}${cocktail_items_container}`;
         }
 
         function activateCategory(category) {
@@ -110,6 +115,11 @@
             clone.style.setProperty('--dy', `${dy}px`);
             document.body.appendChild(clone);
             clone.addEventListener('animationend', () => clone.remove());
+        }
+
+        function toggleDeleteMode() {
+            page_state.delete_mode = !page_state.delete_mode;
+            renderData();
         }
     </script>
 </body>

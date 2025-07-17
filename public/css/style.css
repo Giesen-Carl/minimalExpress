@@ -3,6 +3,23 @@
     scrollbar-width: none;
 }
 
+button {
+    margin: 5px 15px;
+    padding: 10px 20px;
+    border: 1px solid rgb(var(--wesbos));
+    border-radius: 3px;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background-color: rgba(var(--wesbos), 0);
+}
+
+button:hover {
+    background-color: rgba(var(--wesbos), 0.1);
+}
+
 .menu {
     display: grid;
 }
@@ -212,15 +229,8 @@ td {
     display: inline-block;
     padding: 6px;
     height: 49px;
-    transition: transform 1s ease;
-}
-
-.header-button .username-text {
-    font-size: 14px;
-}
-
-.header-button .logout-text {
-    font-size: 11px;
+    margin: 0px;
+    font-size: 10px;
 }
 
 .order-button-icon {
@@ -283,4 +293,10 @@ td {
         transform: translate(var(--dx), var(--dy)) scale(0.3);
         opacity: 0.8;
     }
+}
+
+.admin-actions-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
 }

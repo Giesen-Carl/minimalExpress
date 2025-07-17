@@ -173,7 +173,7 @@ export function redirect(req, res, next) {
 // validate Role
 export function validateRole(role) {
     return (req, res, next) => {
-        if (req.user?.role !== role) {
+        if (req.user?.role !== role && req.user?.role !== Role.ADMIN) {
             throw new Error('Du besitzt nicht die benötigten Rechte um diese Seite zu öffnen.')
         }
         next();

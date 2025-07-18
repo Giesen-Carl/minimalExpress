@@ -6,7 +6,6 @@ import cocktailRouter from './cocktailRouter.js';
 import bestellungRouter from './bestellungRouter.js';
 import expressWs from 'express-ws';
 import { init } from './database/db_client.js';
-import { getAllCocktailsWithIngredients, getAllIngredients } from './database/queries.js';
 import setupDB from './database/schema.js';
 import ingredientRouter from './ingredientRouter.js';
 import WebsocketManager from './websockerManager.js';

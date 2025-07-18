@@ -269,3 +269,73 @@ export async function setIngredientAvailability(ingredient_id, available) {
     const queryName = 'Set Ingredient Availability';
     return await runQuery(query, queryName);
 }
+
+export async function getBestellungenWithCocktails(username) {
+    let db_res = [];
+    if (username) {
+        db_res = await getBestellungenWithCocktailByUsername(username);
+    } else {
+        db_res = await getAllBestellungenWithCocktails();
+    }
+    const bestell_ids = [];
+    const bestellungen = db_res.map(b => {
+        const ingredient_ids = [];
+        const ingredients = db_res
+            .filter(c => c.cocktail_name === b.cocktail_name)
+            .map(c => {
+                if (ingredient_ids.includes(c.ingredient_id)) {
+                    return null;
+                }
+                ingredient_ids.push(c.ingredient_id);
+                return {
+                    ingredient_name: c.ingredient_name,
+                    menge: c.menge,
+                    available: c.available
+                };
+            })
+            .filter(i => i !== null);
+        return {
+            id: b.id,
+            timestamp: b.timestamp,
+            username: b.username,
+            cocktail_name: b.cocktail_name,
+            status: b.status,
+            ingredients: ingredients,
+        };
+    })
+        .filter(b => {
+            if (bestell_ids.includes(b.id)) {
+                return false;
+            } else {
+                bestell_ids.push(b.id);
+                return true;
+            }
+        })
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    return bestellungen;
+}
+
+async function getAllBestellungenWithCocktails() {
+    const query = `
+        SELECT bestellung.id, bestellung.username, bestellung.cocktail_name, bestellung.status, bestellung.timestamp, cocktail_ingredient.menge, ingredient.id as ingredient_id, ingredient.ingredient_name, ingredient.available
+        FROM bestellung
+        INNER JOIN cocktail ON bestellung.cocktail_name = cocktail.cocktail_name
+        INNER JOIN cocktail_ingredient ON cocktail.id = cocktail_ingredient.cocktail_id
+        INNER JOIN ingredient ON ingredient.id = cocktail_ingredient.ingredient_id
+    `;
+    const queryName = 'Get All Bestellungen with Cocktails';
+    return await runQuery(query, queryName);
+}
+
+async function getBestellungenWithCocktailByUsername(username) {
+    const query = `
+        SELECT bestellung.id, bestellung.username, bestellung.cocktail_name, bestellung.status, bestellung.timestamp, cocktail_ingredient.menge, ingredient.id as ingredient_id, ingredient.ingredient_name, ingredient.available
+        FROM bestellung
+        INNER JOIN cocktail ON bestellung.cocktail_name = cocktail.cocktail_name
+        INNER JOIN cocktail_ingredient ON cocktail.id = cocktail_ingredient.cocktail_id
+        INNER JOIN ingredient ON ingredient.id = cocktail_ingredient.ingredient_id
+        WHERE bestellung.username = '${username}'
+    `;
+    const queryName = 'Get All Bestellungen with Cocktails by Username';
+    return await runQuery(query, queryName);
+}

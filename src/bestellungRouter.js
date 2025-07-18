@@ -1,6 +1,6 @@
 import express from 'express';
 import { auth, authUser, Role, validateRole } from './auth_router.js';
-import { completeBestellungByBestellungId, createObject, deleteBestellungByBestellungId, getAdminUUIDs, getAllBestellungen, getBestellungByBestellungId, getBestellungenByUsername, getCocktailByName, getUserByBestellungId, getUserByUsername, getUserByUUID } from './database/queries.js';
+import { completeBestellungByBestellungId, createObject, deleteBestellungByBestellungId, getAdminUUIDs, getBestellungByBestellungId, getBestellungenWithCocktails, getCocktailByName, getUserByBestellungId, getUserByUsername } from './database/queries.js';
 import WebsocketManager from './websockerManager.js';
 
 const BestellStatus = {
@@ -26,26 +26,10 @@ bestellungRouter.get('/bestellung', auth, async (req, res) => {
 });
 
 async function findBestellungenByUser(user) {
-    let bestellungenDB;
-    if (user.role === Role.USER) {
-        bestellungenDB = await getBestellungenByUsername(user.username);
-    } else if (user.role === Role.ADMIN) {
-        bestellungenDB = await getAllBestellungen();
-    }
     let bestellungen;
-    if (bestellungenDB !== undefined) {
-        bestellungen = bestellungenDB.map(b => {
-            const timeString = dateFormat.format(new Date(b.timestamp)).replace(',', '');
-            return {
-                timestamp: b.timestamp,
-                time: timeString,
-                username: b.username,
-                cocktail_name: b.cocktail_name,
-                status: b.status,
-                id: b.id
-            }
-        })
-            .sort((a, b) => getTimeFromTimestamp(a.timestamp) - getTimeFromTimestamp(b.timestamp));
+    if (user.role === Role.USER || user.role === Role.ADMIN) {
+        const username = user.role === Role.USER ? user.username : undefined;
+        bestellungen = await getBestellungenWithCocktails(username);
     }
     return bestellungen || [];
 }
@@ -69,10 +53,10 @@ bestellungRouter.post(
         }
         res.sendStatus(200);
     });
-bestellungRouter.post(
-    '/bestellung/delete/:bestellung_id',
+bestellungRouter.delete(
+    '/bestellung/:bestellung_id',
     authUser,
-    validateRole(Role.ADMIN),
+    validateRole(Role.USER),
     async (req, res) => {
         try {
             const params = req.params;
@@ -136,10 +120,6 @@ async function bestellungAbschliessen(bestellung_id) {
         throw new Error('Die Bestellung ist nicht in progress');
     }
     await completeBestellungByBestellungId(bestellung_id);
-}
-
-function getTimeFromTimestamp(timestamp) {
-    return (new Date(timestamp)).getTime();
 }
 
 export default bestellungRouter;

@@ -83,19 +83,19 @@ button:hover {
     transition: 1s;
 }
 
-.cocktail-action-button.order-button {
+.order-button {
     background-color: rgba(var(--wesbos), 0.2);
 }
 
-.cocktail-action-button.order-button:hover {
+.order-button:hover {
     background-color: rgba(var(--wesbos), 0.8);
 }
 
-.cocktail-action-button.delete-button {
+.delete-button {
     background-color: rgba(255, 0, 0, 0.2);
 }
 
-.cocktail-action-button.delete-button:hover {
+.delete-button:hover {
     background-color: rgba(255, 0, 0, 0.8);
 }
 
@@ -277,4 +277,110 @@ td {
     border-radius: 4px;
     font-weight: bold;
     background-color: rgba(6, 187, 6, 0.5);
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .bestellung-kachel {
+        max-width: 100%;
+    }
+}
+
+.bestellungen-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.bestellung-kachel {
+    width: 100%;
+    max-width: 49%;
+    min-width: 300px;
+    text-align: center;
+    border: 1px solid rgb(var(--wesbos));
+    border-radius: 4px;
+    color: #fff;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.header-container {
+    text-align: left;
+    font: normal;
+    margin: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.cocktail-details-container {
+    border: 1px solid rgb(var(--wesbos), 0.5);
+    border-radius: 4px;
+    font-weight: initial;
+}
+
+.cocktail-name-container {
+    font: 30px cookie, cursive;
+    color: rgb(var(--wesbos));
+    padding: 10px 0 5px 0;
+}
+
+.ingredients-container {
+    color: #fff;
+    margin-bottom: 10px;
+    text-align: left;
+    margin: 0 0 10px 20px;
+}
+
+.bestellung-action-button {
+    padding: 5px 10px;
+    border: 1px solid rgb(var(--wesbos));
+    border-radius: 3px;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: 1px;
+    margin: 0;
+    text-align: center;
+}
+
+.bestellung-action-button.complete-button {
+    padding: 17px;
+}
+
+.bestellung-action-button.complete-button {
+    padding: 17px;
+}
+
+.bestell-status {
+    border: 1px solid rgb(var(--wesbos));
+    border-radius: 4px;
+    padding: 2px;
+    text-align: center;
+    text-wrap: nowrap;
+}
+
+.bestell-status.in-progress {
+    background-color: rgba(var(--wesbos), 0.5);
+}
+
+.bestell-status.finished {
+    background-color: rgba(6, 187, 6, 0.5);
+}
+
+.bestellung-username {
+    text-wrap: nowrap;
+    overflow: hidden;
+    font-size: 14px;
+    color: #fff;
+    margin: 5px 10px 5px 10px;
+}
+
+.complete-action-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 10px 0;
 }

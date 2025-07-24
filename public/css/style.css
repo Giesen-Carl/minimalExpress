@@ -61,14 +61,14 @@ button:hover {
 }
 
 .item__description:hover>.cocktail-action-button {
-    padding: 0px 30px;
+    width: 100px;
     opacity: 1;
     font-size: 30px;
     transition: 0.2s;
 }
 
 .cocktail-action-button {
-    padding: 0px 5px;
+    width: 0px;
     border: 1px solid rgb(var(--wesbos));
     border-radius: 3px;
     color: #fff;
@@ -101,10 +101,9 @@ button:hover {
 
 @media (hover: none) and (pointer: coarse) {
     .cocktail-action-button {
-        padding: 0px 30px;
+        width: 100px;
         opacity: 1;
         font-size: 30px;
-        background-color: rgba(var(--wesbos), 0.2);
     }
 }
 

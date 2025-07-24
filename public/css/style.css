@@ -383,3 +383,40 @@ td {
     justify-content: center;
     margin: 10px 0 10px 0;
 }
+
+.ingredient-kachel {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.ingredient-kachel[available=true] {
+    background-color: rgba(0, 130, 0, 0.2);
+    border: 1px solid rgb(0, 255, 0);
+}
+
+.ingredient-kachel[available=false] {
+    background-color: rgb(130, 0, 0, 0.2);
+    border: 1px solid rgb(255, 0, 0);
+}
+
+.ingredient-name-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.toggle-availability-button {
+    margin: 0;
+    width: 100px;
+    background-color: rgba(var(--wesbos), 0.4);
+}
+
+.delete-ingredient-button {
+    margin: 0;
+    width: 100px;
+    background-color: rgba(255, 0, 0, 0.2);
+}

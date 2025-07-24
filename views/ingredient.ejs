@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Fermantor - Die besten Cocktails in Düren</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Cookie" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
@@ -47,44 +48,52 @@
 <body>
     <div class="wrapper">
         <%- include('partials/header.ejs', { headerTitle: 'Ingredient' , headerButtons: ['cocktails-button'] } ) %>
-            <table id="ingredient_table"></table>
-            <div id="add_ingredient_form"></div>
+            <div id="root" class="root-wrapper"></div>
     </div> <!-- End Wrapper -->
     <script>
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
         const ws = new WebSocket(`${protocol}://${window.location.host}/ingredient/ws`);
-        ws.addEventListener('message', event => renderData(JSON.parse(event.data)));
+        ws.addEventListener('message', event => {
+            page_state.data = JSON.parse(event.data);
+            renderData();
+        });
 
-        function renderData(data) {
-            const table = document.getElementById('ingredient_table');
-            const add_ingredient_form = document.getElementById('add_ingredient_form');
-            const tableHeader = `
-                    <tr>
-                        <th>Name</th>
-                        <th>Available</th>
-                        <th>Actions</th>
-                    </tr>
-                `;
-            const tableRows = data.reduce((acc, cur) => {
-                const toggleAvailability = `<button type="submit" onClick="setAvailable(${cur.id}, ${!cur.available})">Toggle</button>`;
-                const deleteIngredient = `<button type="submit" onClick="deleteIngredient(${cur.id})">Delete</button>`;
-                const actions = `${toggleAvailability}${deleteIngredient}`;
-                return acc + `
-                        <tr>
-                            <td>${cur.ingredient_name}</th>
-                            <td>${cur.available ? '✅' : '❌'}</th>
-                            <td>${actions}</th>
-                        </tr>
-                    `;
-            }, '')
+        const page_state = {
+            data: undefined,
+            username: config.username,
+            role: config.role,
+            delete_mode: false,
+        }
+
+        function renderData() {
+            const data = page_state.data;
+            const root = document.getElementById('root');
+            const delete_mode_button = page_state.role === 'ADMIN' ? `<button class="delete-mode-button" onClick="toggleDeleteMode()">${page_state.delete_mode ? 'delete on' : 'delete off'}</button>` : '';
+            const admin_actions_container = `<div class="admin-actions-container">${delete_mode_button}</div>`;
+
+            // ===================== INGREDIENTS ===========================
+
+            const ingredients = data.map(item => {
+                const delete_mode = page_state.delete_mode;
+                const b_class_name = delete_mode ? 'delete-ingredient-button' : 'toggle-availability-button';
+                const b_text = delete_mode ? 'DELETE' : 'TOGGLE';
+                return `<div class="ingredient-kachel" available="${item.available}">
+                        <div class="ingredient-name-container"><span>${item.ingredient_name}</span></div>
+                        <button class="${b_class_name}" onClick="${delete_mode ? `deleteIngredient(${item.id})` : `setAvailable(${item.id}, ${!item.available})`}">${b_text}</button> 
+                    </div>`;
+            }).join('');
+
+            // =================== INGREDIENTS ENDE ========================
+
+            const ingredient_container = `<div id="ingredient-list">${ingredients}</div>`;
             const addIngredient = `
                     <div class="add-ingredient">
                         <input type="text" id="new-ingredient-name" placeholder="New ingredient name" />
                         <button onclick="addIngredient()">➕</button>
                     </div>
                 `;
-            table.innerHTML = `${tableHeader}${tableRows}`;
-            add_ingredient_form.innerHTML = `${addIngredient}`
+            const add_ingredients_form = `<div id="add_ingredient_form">${addIngredient}</div>`;
+            root.innerHTML = `${admin_actions_container}${ingredient_container}${add_ingredients_form}`;
         }
 
         function setAvailable(id, available) {
@@ -92,7 +101,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ingredient_id: id, availability: available })
-            })
+            });
         }
         function deleteIngredient(id) {
             fetch('/ingredient/delete', {
@@ -111,6 +120,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ingredient_name: name })
             });
+        }
+        function toggleDeleteMode() {
+            page_state.delete_mode = !page_state.delete_mode;
+            renderData();
         }
     </script>
 </body>
